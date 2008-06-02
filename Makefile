@@ -141,7 +141,7 @@ ifeq ($(ARCH),ppc)
 CROSS_COMPILE = ppc_8xx-
 endif
 ifeq ($(ARCH),arm)
-CROSS_COMPILE = arm-linux-
+CROSS_COMPILE = arm-none-linux-gnueabi-
 endif
 ifeq ($(ARCH),i386)
 CROSS_COMPILE = i386-linux-
@@ -251,7 +251,7 @@ LIBBOARD = board/$(BOARDDIR)/lib$(BOARD).a
 LIBBOARD := $(addprefix $(obj),$(LIBBOARD))
 
 # Add GCC lib
-PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -lgcc
+PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -lgcc -lgcc_eh
 
 # The "tools" are needed early, so put this first
 # Don't include stuff already done in $(LIBS)
@@ -2546,6 +2546,12 @@ lpc2292sodimm_config:	unconfig
 
 SMN42_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm720t SMN42 siemens lpc2292
+
+#########################################################################
+## ARM CORTEX Systems
+#########################################################################
+omap3530beagle_config :    unconfig
+	@./mkconfig $(@:_config=) arm omap3 omap3530beagle
 
 #########################################################################
 ## XScale Systems
