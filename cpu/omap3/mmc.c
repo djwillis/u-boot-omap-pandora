@@ -67,16 +67,21 @@ unsigned char mmc_board_init(void)
 
 void mmc_init_stream(void)
 {
+	volatile unsigned int mmc_stat;
+	
 	OMAP_HSMMC_CON |= INIT_INITSTREAM;
 
 	OMAP_HSMMC_CMD = MMC_CMD0;
-	while (!(OMAP_HSMMC_STAT & CC_MASK)) {
-	}
+	do {
+		mmc_stat = OMAP_HSMMC_STAT;
+	} while (!(mmc_stat & CC_MASK));
+
 	OMAP_HSMMC_STAT = CC_MASK;
 
 	OMAP_HSMMC_CMD = MMC_CMD0;
-	while (!(OMAP_HSMMC_STAT & CC_MASK)) {
-	}
+	do {
+		mmc_stat = OMAP_HSMMC_STAT;
+	} while (!(mmc_stat & CC_MASK));
 
 	OMAP_HSMMC_STAT = OMAP_HSMMC_STAT;
 	OMAP_HSMMC_CON &= ~INIT_INITSTREAM;
@@ -432,6 +437,7 @@ unsigned char configure_mmc(mmc_card_data * mmc_card_cur)
 	unsigned char trans_speed;
 
 	ret_val = mmc_init_setup();
+
 	if (ret_val != 1) {
 		return ret_val;
 	}
