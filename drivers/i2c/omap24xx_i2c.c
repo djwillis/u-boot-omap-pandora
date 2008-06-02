@@ -22,11 +22,13 @@
 
 #include <common.h>
 
-#ifdef CONFIG_DRIVER_OMAP24XX_I2C
+#if defined(CONFIG_DRIVER_OMAP24XX_I2C) || defined(CONFIG_DRIVER_OMAP34XX_I2C)
 
 #include <asm/arch/i2c.h>
 #include <asm/io.h>
 
+#define inb(a) __raw_readb(a)
+#define outb(a,v) __raw_writeb(a,v)
 #define inw(a) __raw_readw(a)
 #define outw(a,v) __raw_writew(a,v)
 
@@ -114,7 +116,11 @@ static int i2c_read_byte (u8 devaddr, u8 regoffset, u8 * value)
 
 		status = wait_for_pin ();
 		if (status & I2C_STAT_RRDY) {
-			*value = inw (I2C_DATA);
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)
+                        *value = inb(I2C_DATA);
+#else
+                        *value = inw(I2C_DATA);
+#endif
 			udelay (20000);
 		} else {
 			i2c_error = 1;
@@ -155,8 +161,23 @@ static int i2c_write_byte (u8 devaddr, u8 regoffset, u8 value)
 	status = wait_for_pin ();
 
 	if (status & I2C_STAT_XRDY) {
-		/* send out two bytes */
-		outw ((value << 8) + regoffset, I2C_DATA);
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)
+                /* send out 1 byte */
+                outb(regoffset, I2C_DATA);
+                outw(I2C_STAT_XRDY, I2C_STAT);
+                status = wait_for_pin();
+                if ((status & I2C_STAT_XRDY)) {
+                        /* send out next 1 byte */
+                        outb(value, I2C_DATA);
+                        outw(I2C_STAT_XRDY, I2C_STAT);
+                } else {
+                        i2c_error = 1;
+                }
+#else
+                /* send out two bytes */
+                outw ((value << 8) + regoffset, I2C_DATA);
+#endif
+
 		/* must have enough delay to allow BB bit to go low */
 		udelay (50000);
 		if (inw (I2C_STAT) & I2C_STAT_NACK) {
@@ -193,7 +214,11 @@ static void flush_fifo(void)
 	while(1){
 		stat = inw(I2C_STAT);
 		if(stat == I2C_STAT_RRDY){
-			inw(I2C_DATA);
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)
+                        inb(I2C_DATA);
+#else
+                        inw(I2C_DATA);
+#endif
 			outw(I2C_STAT_RRDY,I2C_STAT);
 			udelay(1000);
 		}else
