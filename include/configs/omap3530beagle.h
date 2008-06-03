@@ -92,16 +92,28 @@
 #define CFG_MMC_BASE		0xF0000000
 #define CONFIG_DOS_PARTITION	1
 
-/* include default commands */
-#define CONFIG_CMD_LOADB
-#define CONFIG_CMD_I2C
-#define CONFIG_CMD_DFL
-#define CONFIG_CMD_JFFS2
-#define CONFIG_CMD_MMC
-#define CONFIG_CMD_FAT
-#define CONFIG_CMD_NAND
-#define CONFIG_CMD_ENV
-#define CONFIG_CMD_MEMORY
+/* commands to include */
+
+#define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+#define CONFIG_CMD_FAT		/* FAT support			*/
+#define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
+
+#define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+#define CONFIG_CMD_MMC		/* MMC support			*/
+#define CONFIG_CMD_NAND		/* NAND support			*/
+
+#define CONFIG_CMD_AUTOSCRIPT	/* autoscript support		*/
+#define CONFIG_CMD_BDI		/* bdinfo			*/
+#define CONFIG_CMD_BOOTD	/* bootd			*/
+#define CONFIG_CMD_CONSOLE	/* coninfo			*/
+#define CONFIG_CMD_ECHO		/* echo arguments		*/
+#define CONFIG_CMD_ENV		/* saveenv			*/
+#define CONFIG_CMD_ITEST	/* Integer (and string) test	*/
+#define CONFIG_CMD_LOADB	/* loadb			*/
+#define CONFIG_CMD_MEMORY	/* md mm nm mw cp cmp crc base loop mtest */
+#define CONFIG_CMD_MISC		/* misc functions like sleep etc*/
+#define CONFIG_CMD_RUN		/* run command in env variable	*/
+
 #define CFG_NO_FLASH
 #define CFG_I2C_SPEED            100
 #define CFG_I2C_SLAVE            1
