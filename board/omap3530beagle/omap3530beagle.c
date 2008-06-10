@@ -36,7 +36,6 @@
 #include <asm/arch/mux.h>
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/sys_info.h>
-#include <asm/arch/clocks.h>
 #include <asm/arch/mem.h>
 #include <i2c.h>
 #include <asm/mach-types.h>

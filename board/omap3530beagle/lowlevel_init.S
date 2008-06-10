@@ -31,7 +31,7 @@
 #include <version.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/mem.h>
-#include <asm/arch/clocks.h>
+#include <asm/arch/clocks_omap3.h>
 
 _TEXT_BASE:
 	.word	TEXT_BASE	/* sdram load addr from config.mk */
