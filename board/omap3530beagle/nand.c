@@ -22,9 +22,7 @@
  */
 
 #include <common.h>
-
 #include <asm/io.h>
-
 #include <asm/arch/cpu.h>
 #include <asm/arch/mem.h>
 #include <linux/mtd/nand_ecc.h>
@@ -45,35 +43,17 @@ volatile unsigned long gpmc_cs_base_add;
 #define ECC_P512_2048_O(val) (((val) & 0x0F000000)>>24)	/* Bit 24 to Bit 27 */
 
 /*
-int nand_unlock(struct mtd_info *mtd, unsigned long off, unsigned long size)
-{
-	register struct nand_chip *this = mtd->priv;
-	int start_page, end_page;
-
-	start_page = (int) (off >> this->page_shift);
-	end_page = (int) ((off + size) >> this->page_shift);
-
-	printk("\nUnlocking %x - %x. locking rest..\n", off, off + size);
-	this->cmdfunc(mtd, 0x23, -1, start_page);
-	this->cmdfunc(mtd, 0x24, -1, end_page);
-	ndelay (100);
-	return 0;
-}
-*/
-/*
- * omap_nand_hwcontrol - Set the address pointers corretly for the 
+ * omap_nand_hwcontrol - Set the address pointers corretly for the
  *			following address/data/command operation
  * @mtd:        MTD device structure
  * @ctrl:	Says whether Address or Command or Data is following.
  */
-
 static void omap_nand_hwcontrol(struct mtd_info *mtd, int ctrl)
 {
 	register struct nand_chip *this = mtd->priv;
 
-/*
- * Point the IO_ADDR to DATA and ADDRESS registers instead of chip address
- */
+	/* Point the IO_ADDR to DATA and ADDRESS registers instead
+	   of chip address */
 	switch (ctrl) {
 	case NAND_CTL_SETCLE:
 		this->IO_ADDR_W = (void *) gpmc_cs_base_add + GPMC_NAND_CMD;
@@ -97,7 +77,7 @@ static void omap_nand_hwcontrol(struct mtd_info *mtd, int ctrl)
 /*
  * omap_nand_wait - called primarily after a program/erase operation
  *			so that we access NAND again only after the device
- *			is ready again. 
+ *			is ready again.
  * @mtd:        MTD device structure
  * @chip:	nand_chip structure
  * @state:	State from which wait function is being called i.e write/erase.
@@ -118,27 +98,8 @@ static int omap_nand_wait(struct mtd_info *mtd, struct nand_chip *chip,
 	return status;
 }
 
-/*
- * omap_nand_dev_ready - Wait for the NAND device to exit busy state
- *			by polling on RDY/BSY signal
- * @mtd:        MTD device structure
- */
-#if 0
-static int omap_nand_dev_ready(struct mtd_info *mtd)
-{
-	unsigned int wait_status = 0;
-
-	/* busy loop until NAND device is RDY again */
-	while (!(wait_status & (1 << (cs + 8))))
-		wait_status = __raw_readl(GPMC_IRQSTATUS);
-	/* clear the status register for further usage */
-	__raw_writel(1 << (cs + 8), GPMC_IRQSTATUS);
-	return 1;
-}
-#endif
-
 #ifdef CFG_NAND_WIDTH_16
-/**
+/*
  * omap_nand_write_buf16 - [DEFAULT] write buffer to chip
  * @mtd:	MTD device structure
  * @buf:	data buffer
@@ -146,7 +107,7 @@ static int omap_nand_dev_ready(struct mtd_info *mtd)
  *
  * Default write function for 16bit buswith
  */
-static void omap_nand_write_buf(struct mtd_info *mtd, const u_char * buf,
+static void omap_nand_write_buf(struct mtd_info *mtd, const u_char *buf,
 				int len)
 {
 	int i;
@@ -160,7 +121,7 @@ static void omap_nand_write_buf(struct mtd_info *mtd, const u_char * buf,
 	}
 }
 
-/**
+/*
  * nand_read_buf16 - [DEFAULT] read chip data into buffer
  * @mtd:	MTD device structure
  * @buf:	buffer to store date
@@ -168,8 +129,7 @@ static void omap_nand_write_buf(struct mtd_info *mtd, const u_char * buf,
  *
  * Default read function for 16bit buswith
  */
-
-static void omap_nand_read_buf(struct mtd_info *mtd, u_char * buf, int len)
+static void omap_nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 {
 	int i;
 	struct nand_chip *this = mtd->priv;
@@ -188,8 +148,7 @@ static void omap_nand_read_buf(struct mtd_info *mtd, u_char * buf, int len)
  * @len:        number of bytes to write
  *
  */
-
-static void omap_nand_write_buf(struct mtd_info *mtd, const uint8_t * buf,
+static void omap_nand_write_buf(struct mtd_info *mtd, const uint8_t *buf,
 				int len)
 {
 	int i;
@@ -210,8 +169,7 @@ static void omap_nand_write_buf(struct mtd_info *mtd, const uint8_t * buf,
  * @len:        number of bytes to read
  *
  */
-
-static void omap_nand_read_buf(struct mtd_info *mtd, uint8_t * buf, int len)
+static void omap_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 {
 	int i;
 	int j = 0;
@@ -219,13 +177,14 @@ static void omap_nand_read_buf(struct mtd_info *mtd, uint8_t * buf, int len)
 
 	for (i = 0; i < len; i++) {
 		buf[i] = readb(chip->IO_ADDR_R);
-		while (GPMC_BUF_EMPTY == (readl(GPMC_STATUS) & GPMC_BUF_FULL)) ;
+		while (GPMC_BUF_EMPTY == (readl(GPMC_STATUS) & GPMC_BUF_FULL));
 	}
 }
-#endif
+#endif /* CFG_NAND_WIDTH_16 */
 
 /*
- * omap_hwecc_init -  Initialize the Hardware ECC for NAND flash in GPMC controller
+ * omap_hwecc_init - Initialize the Hardware ECC for NAND flash in
+ *                   GPMC controller
  * @mtd:        MTD device structure
  *
  */
@@ -234,22 +193,23 @@ static void omap_hwecc_init(struct nand_chip *chip)
 	unsigned long val = 0x0;
 
 	/* Init ECC Control Register */
-	/*       Clear all ECC  | Enable Reg1 */
+	/* Clear all ECC  | Enable Reg1 */
 	val = ((0x00000001 << 8) | 0x00000001);
 	__raw_writel(val, GPMC_BASE + GPMC_ECC_CONTROL);
 	__raw_writel(0x3fcff000, GPMC_BASE + GPMC_ECC_SIZE_CONFIG);
 }
 
 /*
- * omap_correct_data - Compares the ecc read from nand spare area with ECC registers values
- *			and corrects one bit error if it has occured 
+ * omap_correct_data - Compares the ecc read from nand spare area with
+ *                     ECC registers values
+ *			and corrects one bit error if it has occured
  * @mtd:		 MTD device structure
  * @dat:		 page data
  * @read_ecc:		 ecc read from nand flash
  * @calc_ecc: 		 ecc read from ECC registers
  */
-static int omap_correct_data(struct mtd_info *mtd, u_char * dat,
-			     u_char * read_ecc, u_char * calc_ecc)
+static int omap_correct_data(struct mtd_info *mtd, u_char *dat,
+			     u_char *read_ecc, u_char *calc_ecc)
 {
 	return 0;
 }
@@ -258,17 +218,16 @@ static int omap_correct_data(struct mtd_info *mtd, u_char * dat,
  *  omap_calculate_ecc - Generate non-inverted ECC bytes.
  *
  *  Using noninverted ECC can be considered ugly since writing a blank
- *  page ie. padding will clear the ECC bytes. This is no problem as 
+ *  page ie. padding will clear the ECC bytes. This is no problem as
  *  long nobody is trying to write data on the seemingly unused page.
  *  Reading an erased page will produce an ECC mismatch between
  *  generated and read ECC bytes that has to be dealt with separately.
  *  @mtd:	MTD structure
  *  @dat:	unused
  *  @ecc_code:	ecc_code buffer
-*/
-
-static int omap_calculate_ecc(struct mtd_info *mtd, const u_char * dat,
-			      u_char * ecc_code)
+ */
+static int omap_calculate_ecc(struct mtd_info *mtd, const u_char *dat,
+			      u_char *ecc_code)
 {
 	unsigned long val = 0x0;
 	unsigned long reg;
@@ -298,17 +257,17 @@ static void omap_enable_hwecc(struct mtd_info *mtd, int mode)
 	switch (mode) {
 	case NAND_ECC_READ:
 		__raw_writel(0x101, GPMC_BASE + GPMC_ECC_CONTROL);
-		/* ECC col width) | ( CS )  | ECC Enable */
+		/* ECC col width | CS | ECC Enable */
 		val = (dev_width << 7) | (cs << 1) | (0x1);
 		break;
 	case NAND_ECC_READSYN:
 		__raw_writel(0x100, GPMC_BASE + GPMC_ECC_CONTROL);
-		/* ECC col width) | ( CS )  | ECC Enable */
+		/* ECC col width | CS | ECC Enable */
 		val = (dev_width << 7) | (cs << 1) | (0x1);
 		break;
 	case NAND_ECC_WRITE:
 		__raw_writel(0x101, GPMC_BASE + GPMC_ECC_CONTROL);
-		/* ECC col width) | ( CS )  | ECC Enable */
+		/* ECC col width | CS | ECC Enable */
 		val = (dev_width << 7) | (cs << 1) | (0x1);
 		break;
 	default:
@@ -326,7 +285,7 @@ static struct nand_oobinfo hw_nand_oob_64 = {
 		   2, 3, 4, 5,
 		   6, 7, 8, 9,
 		   10, 11, 12, 13},
-	.oobfree = {{20, 50}}	/* don't care */
+	.oobfree = { {20, 50} }	/* don't care */
 };
 
 static struct nand_oobinfo sw_nand_oob_64 = {
@@ -336,7 +295,7 @@ static struct nand_oobinfo sw_nand_oob_64 = {
 		   40, 41, 42, 43, 44, 45, 46, 47,
 		   48, 49, 50, 51, 52, 53, 54, 55,
 		   56, 57, 58, 59, 60, 61, 62, 63},
-	.oobfree = {{2, 38}}
+	.oobfree = { {2, 38} }
 };
 
 void omap_nand_switch_ecc(struct mtd_info *mtd, int hardware)
@@ -394,7 +353,6 @@ void omap_nand_switch_ecc(struct mtd_info *mtd, int hardware)
  * Members with a "?" were not set in the merged testing-NAND branch,
  * so they are not set here either.
  */
-
 int board_nand_init(struct nand_chip *nand)
 {
 	int gpmc_config = 0;
@@ -404,9 +362,10 @@ int board_nand_init(struct nand_chip *nand)
 		/* already remapped for us */
 		gpmc_cs_base_add = (GPMC_CONFIG_CS0 + (cs * 0x30));
 		/* xloader/Uboot would have written the NAND type for us
-		 * -NOTE This is a temporary measure and cannot handle ONENAND.
-		 * The proper way of doing this is to pass the setup of u-boot up to kernel
-		 * using kernel params - something on the lines of machineID
+		 * NOTE: This is a temporary measure and cannot handle ONENAND.
+		 * The proper way of doing this is to pass the setup of
+		 * u-boot up to kernel using kernel params - something on
+		 * the lines of machineID
 		 */
 		/* Check if NAND type is set */
 		if ((__raw_readl(gpmc_cs_base_add + GPMC_CONFIG1) & 0xC00) ==
@@ -417,8 +376,8 @@ int board_nand_init(struct nand_chip *nand)
 		cs++;
 	}
 	if (cs > GPMC_MAX_CS) {
-		printk
-		    ("NAND: Unable to find NAND settings in GPMC Configuration - quitting\n");
+		printf("NAND: Unable to find NAND settings in " \
+		       "GPMC Configuration - quitting\n");
 	}
 
 	gpmc_config = __raw_readl(GPMC_CONFIG);
@@ -431,25 +390,20 @@ int board_nand_init(struct nand_chip *nand)
 
 	nand->hwcontrol = omap_nand_hwcontrol;
 	nand->options = NAND_NO_PADDING | NAND_CACHEPRG | NAND_NO_AUTOINCR |
-	    NAND_BUSWIDTH_16 | NAND_NO_AUTOINCR;
+			NAND_BUSWIDTH_16 | NAND_NO_AUTOINCR;
 	nand->read_buf = omap_nand_read_buf;
 	nand->write_buf = omap_nand_write_buf;
 	nand->eccmode = NAND_ECC_SOFT;
-/* if RDY/BSY line is connected to OMAP then use the omap ready function
- * and the generic nand_wait function which reads the status register after
- * monitoring the RDY/BSY line. Otherwise use a standard chip delay which
- * is slightly more than tR (AC Timing) of the NAND device and read the
- * status register until you get a failure or success
- */
-
-#if 0
-	nand->dev_ready = omap_nand_dev_ready;
-#else
+	/* if RDY/BSY line is connected to OMAP then use the omap ready
+	 * function and the generic nand_wait function which reads the
+	 * status register after monitoring the RDY/BSY line. Otherwise
+	 * use a standard chip delay which is slightly more than tR
+	 * (AC Timing) of the NAND device and read the status register
+	 * until you get a failure or success
+	 */
 	nand->waitfunc = omap_nand_wait;
 	nand->chip_delay = 50;
-#endif
 
 	return 0;
 }
-
-#endif				/* (CONFIG_COMMANDS & CFG_CMD_NAND) */
+#endif /* (CONFIG_COMMANDS & CFG_CMD_NAND) */
