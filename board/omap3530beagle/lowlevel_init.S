@@ -3,7 +3,7 @@
  *
  * (C) Copyright 2008
  * Texas Instruments, <www.ti.com>
- * 
+ *
  * Initial Code by:
  * Richard Woodruff <r-woodruff2@ti.com>
  * Syed Mohammed Khasim <khasim@ti.com>
@@ -43,7 +43,7 @@ _TEXT_BASE:
  *************************************************************************/
 .global cpy_clk_code
  cpy_clk_code:
-        /* Copy DPLL code into SRAM */ 
+        /* Copy DPLL code into SRAM */
         adr     r0, go_to_speed         /* get addr of clock setting code */
         mov     r2, #384                /* r2 size to copy (div by 32 bytes) */
         mov     r1, r1                  /* r1 <- dest address (passed in) */
@@ -55,7 +55,7 @@ next2:
         bne     next2
 	mov	pc, lr                  /* back to caller */
 
-/* **************************************************************************** 
+/* ***************************************************************************
  *  go_to_speed: -Moves to bypass, -Commits clock dividers, -puts dpll at speed
  *               -executed from SRAM.
  *  R0 = CM_CLKEN_PLL-bypass value
@@ -65,9 +65,9 @@ next2:
  *
  *  Note: If core unlocks/relocks and SDRAM is running fast already it gets
  *        confused.  A reset of the controller gets it back.  Taking away its
- *        L3 when its not in self refresh seems bad for it.  Normally, this code
- *        runs from flash before SDR is init so that should be ok.
- ******************************************************************************/    
+ *        L3 when its not in self refresh seems bad for it.  Normally, this
+ *	  code runs from flash before SDR is init so that should be ok.
+ ****************************************************************************/
 .global go_to_speed
  go_to_speed:
         stmfd sp!, {r4-r6}
@@ -88,13 +88,13 @@ wait1:
         str     r2, [r5]          /* set l3/l4/.. dividers*/
         ldr     r5, pll_div_add3  /* wkup */
         ldr     r2, pll_div_val3  /* rsm val */
-        str     r2, [r5]          
+        str     r2, [r5]
         ldr     r5, pll_div_add4  /* gfx */
-        ldr     r2, pll_div_val4 
-        str     r2, [r5]         
+        ldr     r2, pll_div_val4
+        str     r2, [r5]
         ldr     r5, pll_div_add5  /* emu */
-        ldr     r2, pll_div_val5 
-        str     r2, [r5]     
+        ldr     r2, pll_div_val5
+        str     r2, [r5]
 
         /* now prepare GPMC (flash) for new dpll speed */
 	/* flash needs to be stable when we jump back to it */
@@ -113,7 +113,7 @@ wait1:
         str     r2, [r5]
 
         /* lock DPLL3 and wait a bit */
-        orr     r0, r0, #0x7   /* set up for lock mode */     
+        orr     r0, r0, #0x7   /* set up for lock mode */
         str     r0, [r4]       /* lock */
         nop                    /* ARM slow at this point working at sys_clk */
         nop
@@ -129,7 +129,7 @@ wait2:
         nop
         nop
         ldmfd sp!, {r4-r6}
-        mov     pc, lr           /* back to caller, locked */        
+        mov     pc, lr           /* back to caller, locked */
 
 _go_to_speed: .word go_to_speed
 
@@ -139,7 +139,7 @@ flash_cfg1_addr:
     .word (GPMC_CONFIG_CS0 + GPMC_CONFIG1)
 flash_cfg3_addr:
     .word  (GPMC_CONFIG_CS0 + GPMC_CONFIG3)
-flash_cfg3_val: 
+flash_cfg3_val:
     .word  STNOR_GPMC_CONFIG3
 flash_cfg4_addr:
     .word (GPMC_CONFIG_CS0 + GPMC_CONFIG4)
@@ -152,17 +152,17 @@ flash_cfg5_addr:
 pll_ctl_add:
     .word CM_CLKEN_PLL
 pll_div_add1:
-    .word CM_CLKSEL1_PLL 
+    .word CM_CLKSEL1_PLL
 pll_div_add2:
     .word CM_CLKSEL_CORE
 pll_div_add3:
     .word CM_CLKSEL_WKUP
 pll_div_val3:
-    .word (WKUP_RSM << 1) 
+    .word (WKUP_RSM << 1)
 pll_div_add4:
     .word CM_CLKSEL_GFX
 pll_div_val4:
-    .word (GFX_DIV << 0) 
+    .word (GFX_DIV << 0)
 pll_div_add5:
     .word CM_CLKSEL1_EMU
 pll_div_val5:
@@ -192,7 +192,7 @@ SRAM_STACK:
 
 /* DPLL(1-4) PARAM TABLES */
 /* Each of the tables has M, N, FREQSEL, M2 values defined for nominal
- * OPP (1.2V). The fields are defined according to dpll_param struct(clock.c). 
+ * OPP (1.2V). The fields are defined according to dpll_param struct(clock.c).
  * The values are defined for all possible sysclk and for ES1 and ES2.
  */
 
@@ -212,7 +212,7 @@ mpu_dpll_param:
 .word 0x1F4,0x0C,0x03,0x01
 /* 3410 */
 .word 0x10A,0x0C,0x03,0x01
- 
+
 /* 19.2MHz */
 /* ES1 */
 .word 0x179,0x12,0x04,0x01
