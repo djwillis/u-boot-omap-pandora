@@ -197,25 +197,9 @@ void display_board_info(u32 btype)
 #ifdef CONFIG_LED_INFO
 	char led_string[CONFIG_LED_LEN] = { 0 };
 #endif
-
-#if defined(L3_165MHZ)
 	char p_l3[] = "165";
-#elif defined(L3_110MHZ)
-	char p_l3[] = "110";
-#elif defined(L3_133MHZ)
-	char p_l3[] = "133";
-#elif defined(L3_100MHZ)
-	char p_l3[] = "100"
-#endif
-#if defined(PRCM_PCLK_OPP1)
-	    char p_cpu[] = "1";
-#elif defined(PRCM_PCLK_OPP2)
-	    char p_cpu[] = "2";
-#elif defined(PRCM_PCLK_OPP3)
-	    char p_cpu[] = "3";
-#elif defined(PRCM_PCLK_OPP4)
-	    char p_cpu[] = "4"
-#endif
+	char p_cpu[] = "2";
+
 	char *cpu_s, *db_s, *mem_s, *sec_s;
 	u32 cpu, rev, sec;
 

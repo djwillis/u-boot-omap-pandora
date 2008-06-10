@@ -44,10 +44,6 @@
 #define V_OSCK                   26000000	/* Clock output from T2 */
 #define V_SCLK                   (V_OSCK >> 1)
 
-//#define PRCM_CLK_CFG2_266MHZ   1	/* VDD2=1.15v - 133MHz DDR */
-#define PRCM_CLK_CFG2_332MHZ     1    /* VDD2=1.15v - 166MHz DDR */
-#define PRCM_PCLK_OPP2           1	/* ARM=381MHz - VDD1=1.20v */
-
 #undef CONFIG_USE_IRQ		/* no support for IRQs */
 #define CONFIG_MISC_INIT_R
 
@@ -272,6 +268,7 @@ extern unsigned int boot_flash_off;
 extern unsigned int boot_flash_sec;
 extern unsigned int boot_flash_type;
 #endif
+
 
 #define WRITE_NAND_COMMAND(d, adr) __raw_writew(d, (nand_cs_base + GPMC_NAND_CMD))
 #define WRITE_NAND_ADDRESS(d, adr) __raw_writew(d, (nand_cs_base + GPMC_NAND_ADR))
