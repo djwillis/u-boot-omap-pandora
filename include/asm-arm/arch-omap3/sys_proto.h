@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2004-2006
+ * (C) Copyright 2004-2008
  * Texas Instruments, <www.ti.com>
  * Richard Woodruff <r-woodruff2@ti.com>
  *
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
   */
-#ifndef _OMAP34XX_SYS_PROTO_H_
-#define _OMAP34XX_SYS_PROTO_H_
+#ifndef _SYS_PROTO_H_
+#define _SYS_PROTO_H_
 
 void prcm_init(void);
 void per_clocks_enable(void);
@@ -29,7 +29,6 @@ void sdrc_init(void);
 void do_sdrc_init(u32, u32);
 void gpmc_init(void);
 
-void ether_init(void);
 void watchdog_init(void);
 void set_muxconf_regs(void);
 
@@ -43,7 +42,6 @@ u32 get_gpmc0_type(void);
 u32 get_gpmc0_width(void);
 u32 get_board_type(void);
 void display_board_info(u32);
-void update_mux(u32, u32);
 u32 get_sdr_cs_size(u32 offset);
 u32 running_in_sdram(void);
 u32 running_in_sram(void);
