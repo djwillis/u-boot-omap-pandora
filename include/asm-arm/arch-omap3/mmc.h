@@ -1,175 +1,235 @@
 /*
- *  linux/drivers/mmc/mmc_pxa.h
+ * (C) Copyright 2008
+ * Texas Instruments, <www.ti.com>
+ * Syed Mohammed Khasim <khasim@ti.com>
  *
- *  Author: Vladimir Shebordaev, Igor Oblakov
- *  Copyright:  MontaVista Software Inc.
+ * See file CREDITS for list of people who contributed to this
+ * project.
  *
- *  $Id: mmc_pxa.h,v 0.3.1.6 2002/09/25 19:25:48 ted Exp ted $
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation's version 2 of
+ * the License.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
-#ifndef __MMC_PXA_P_H__
-#define __MMC_PXA_P_H__
 
-/* PXA-250 MMC controller registers */
+#ifndef MMC_H
+#define MMC_H
 
-/* MMC_STRPCL */
-#define MMC_STRPCL_STOP_CLK     	(0x0001UL)
-#define MMC_STRPCL_START_CLK		(0x0002UL)
+#include "mmc_host_def.h"
 
-/* MMC_STAT */
+/* Responses */
+#define RSP_TYPE_NONE	  (RSP_TYPE_NORSP   | CCCE_NOCHECK | CICE_NOCHECK)
+#define RSP_TYPE_R1	  (RSP_TYPE_LGHT48  | CCCE_CHECK   | CICE_CHECK)
+#define RSP_TYPE_R1B	  (RSP_TYPE_LGHT48B | CCCE_CHECK   | CICE_CHECK)
+#define RSP_TYPE_R2	  (RSP_TYPE_LGHT136 | CCCE_CHECK   | CICE_NOCHECK)
+#define RSP_TYPE_R3	  (RSP_TYPE_LGHT48  | CCCE_NOCHECK | CICE_NOCHECK)
+#define RSP_TYPE_R4	  (RSP_TYPE_LGHT48  | CCCE_NOCHECK | CICE_NOCHECK)
+#define RSP_TYPE_R5	  (RSP_TYPE_LGHT48  | CCCE_CHECK   | CICE_CHECK)
+#define RSP_TYPE_R6	  (RSP_TYPE_LGHT48  | CCCE_CHECK   | CICE_CHECK)
+#define RSP_TYPE_R7	  (RSP_TYPE_LGHT48  | CCCE_CHECK   | CICE_CHECK)
 
-#define MMC_STAT_ERRORS (MMC_STAT_RES_CRC_ERROR|MMC_STAT_SPI_READ_ERROR_TOKEN\
-	|MMC_STAT_CRC_READ_ERROR|MMC_STAT_TIME_OUT_RESPONSE\
-	|MMC_STAT_READ_TIME_OUT|MMC_STAT_CRC_WRITE_ERROR)
+/* All supported commands */
+#define MMC_CMD0          (INDEX(0)  | RSP_TYPE_NONE | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD1          (INDEX(1)  | RSP_TYPE_R3   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD2          (INDEX(2)  | RSP_TYPE_R2   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD3          (INDEX(3)  | RSP_TYPE_R1   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_SDCMD3        (INDEX(3)  | RSP_TYPE_R6   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD4          (INDEX(4)  | RSP_TYPE_NONE | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD6          (INDEX(6)  | RSP_TYPE_R1B  | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD7_SELECT   (INDEX(7)  | RSP_TYPE_R1B  | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD7_DESELECT (INDEX(7)  | RSP_TYPE_NONE | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD8          (INDEX(8)  | RSP_TYPE_R1   | DP_DATA    | DDIR_READ)
+#define MMC_SDCMD8        (INDEX(8)  | RSP_TYPE_R7   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD9          (INDEX(9)  | RSP_TYPE_R2   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD12         (INDEX(12) | RSP_TYPE_R1B  | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD13         (INDEX(13) | RSP_TYPE_R1   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD15         (INDEX(15) | RSP_TYPE_NONE | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD16         (INDEX(16) | RSP_TYPE_R1   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_CMD17         (INDEX(17) | RSP_TYPE_R1   | DP_DATA    | DDIR_READ)
+#define MMC_CMD24         (INDEX(24) | RSP_TYPE_R1   | DP_DATA    | DDIR_WRITE)
+#define MMC_ACMD6         (INDEX(6)  | RSP_TYPE_R1   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_ACMD41        (INDEX(41) | RSP_TYPE_R3   | DP_NO_DATA | DDIR_WRITE)
+#define MMC_ACMD51        (INDEX(51) | RSP_TYPE_R1   | DP_DATA    | DDIR_READ)
+#define MMC_CMD55         (INDEX(55) | RSP_TYPE_R1   | DP_NO_DATA | DDIR_WRITE)
 
-/* MMC_CLKRT */
-#define MMC_CLKRT_20MHZ	 		(0x0000UL)
-#define MMC_CLKRT_10MHZ	 		(0x0001UL)
-#define MMC_CLKRT_5MHZ	  		(0x0002UL)
-#define MMC_CLKRT_2_5MHZ		(0x0003UL)
-#define MMC_CLKRT_1_25MHZ       	(0x0004UL)
-#define MMC_CLKRT_0_625MHZ      	(0x0005UL)
-#define MMC_CLKRT_0_3125MHZ     	(0x0006UL)
+#define MMC_AC_CMD_RCA_MASK     (unsigned int)(0xFFFF << 16)
+#define MMC_BC_CMD_DSR_MASK     (unsigned int)(0xFFFF << 16)
+#define MMC_DSR_DEFAULT         (0x0404)
+#define SD_CMD8_CHECK_PATTERN	(0xAA)
+#define SD_CMD8_2_7_3_6_V_RANGE	(0x01 << 8)
 
-/* MMC_SPI */
-#define MMC_SPI_DISABLE	 		(0x00UL)
-#define MMC_SPI_EN	  		(0x01UL)
-#define MMC_SPI_CS_EN	   		(0x01UL << 2)
-#define MMC_SPI_CS_ADDRESS      	(0x01UL << 3)
-#define MMC_SPI_CRC_ON	  		(0x01UL << 1)
+/* Clock Configurations and Macros */
 
-/* MMC_CMDAT */
-#define MMC_CMDAT_MMC_DMA_EN		(0x0001UL << 7)
-#define MMC_CMDAT_INIT	  		(0x0001UL << 6)
-#define MMC_CMDAT_BUSY	  		(0x0001UL << 5)
-#define MMC_CMDAT_STREAM		(0x0001UL << 4)
-#define MMC_CMDAT_BLOCK	 		(0x0000UL << 4)
-#define MMC_CMDAT_WRITE	 		(0x0001UL << 3)
-#define MMC_CMDAT_READ	  		(0x0000UL << 3)
-#define MMC_CMDAT_DATA_EN       	(0x0001UL << 2)
-#define MMC_CMDAT_R1	    		(0x0001UL)
-#define MMC_CMDAT_R2	    		(0x0002UL)
-#define MMC_CMDAT_R3	    		(0x0003UL)
+#define MMC_CLOCK_REFERENCE		(96)
+#define MMC_RELATIVE_CARD_ADDRESS	(0x1234)
+#define MMC_INIT_SEQ_CLK		(MMC_CLOCK_REFERENCE * 1000 / 80)
+#define MMC_400kHz_CLK			(MMC_CLOCK_REFERENCE * 1000 / 400)
+#define CLKDR(r, f, u)			((((r)*100) / ((f)*(u))) + 1)
+#define CLKD(f, u)			(CLKDR(MMC_CLOCK_REFERENCE, f, u))
 
-/* MMC_RESTO */
-#define MMC_RES_TO_MAX	  		(0x007fUL)	/* [6:0] */
+#define MMC_OCR_REG_ACCESS_MODE_MASK			(0x3 << 29)
+#define MMC_OCR_REG_ACCESS_MODE_BYTE    		(0x0 << 29)
+#define MMC_OCR_REG_ACCESS_MODE_SECTOR  		(0x2 << 29)
 
-/* MMC_RDTO */
-#define MMC_READ_TO_MAX	 		(0x0ffffUL)	/* [15:0] */
+#define MMC_OCR_REG_HOST_CAPACITY_SUPPORT_MASK		(0x1 << 30)
+#define MMC_OCR_REG_HOST_CAPACITY_SUPPORT_BYTE		(0x0 << 30)
+#define MMC_OCR_REG_HOST_CAPACITY_SUPPORT_SECTOR	(0x1 << 30)
 
-/* MMC_BLKLEN */
-#define MMC_BLK_LEN_MAX	 		(0x03ffUL)	/* [9:0] */
+#define MMC_SD2_CSD_C_SIZE_LSB_MASK         (0xFFFF)
+#define MMC_SD2_CSD_C_SIZE_MSB_MASK         (0x003F)
+#define MMC_SD2_CSD_C_SIZE_MSB_OFFSET       (16)
+#define MMC_CSD_C_SIZE_LSB_MASK             (0x0003)
+#define MMC_CSD_C_SIZE_MSB_MASK             (0x03FF)
+#define MMC_CSD_C_SIZE_MSB_OFFSET           (2)
 
-/* MMC_PRTBUF */
-#define MMC_PRTBUF_BUF_PART_FULL       	(0x01UL)
-#define MMC_PRTBUF_BUF_FULL		(0x00UL    )
+#define MMC_CSD_TRAN_SPEED_UNIT_MASK        (0x07 << 0)
+#define MMC_CSD_TRAN_SPEED_FACTOR_MASK      (0x0F << 3)
+#define MMC_CSD_TRAN_SPEED_UNIT_100MHZ      (0x3 << 0)
+#define MMC_CSD_TRAN_SPEED_FACTOR_1_0       (0x01 << 3)
+#define MMC_CSD_TRAN_SPEED_FACTOR_8_0       (0x0F << 3)
 
-/* MMC_I_MASK */
-#define MMC_I_MASK_TXFIFO_WR_REQ	(0x01UL << 6)
-#define MMC_I_MASK_RXFIFO_RD_REQ	(0x01UL << 5)
-#define MMC_I_MASK_CLK_IS_OFF	   	(0x01UL << 4)
-#define MMC_I_MASK_STOP_CMD	 	(0x01UL << 3)
-#define MMC_I_MASK_END_CMD_RES	  	(0x01UL << 2)
-#define MMC_I_MASK_PRG_DONE	 	(0x01UL << 1)
-#define MMC_I_MASK_DATA_TRAN_DONE       (0x01UL)
-#define MMC_I_MASK_ALL	      		(0x07fUL)
+typedef struct {
+	unsigned not_used:1;
+	unsigned crc:7;
+	unsigned ecc:2;
+	unsigned file_format:2;
+	unsigned tmp_write_protect:1;
+	unsigned perm_write_protect:1;
+	unsigned copy:1;
+	unsigned file_format_grp:1;
+	unsigned content_prot_app:1;
+	unsigned reserved_1:4;
+	unsigned write_bl_partial:1;
+	unsigned write_bl_len:4;
+	unsigned r2w_factor:3;
+	unsigned default_ecc:2;
+	unsigned wp_grp_enable:1;
+	unsigned wp_grp_size:5;
+	unsigned erase_grp_mult:5;
+	unsigned erase_grp_size:5;
+	unsigned c_size_mult:3;
+	unsigned vdd_w_curr_max:3;
+	unsigned vdd_w_curr_min:3;
+	unsigned vdd_r_curr_max:3;
+	unsigned vdd_r_curr_min:3;
+	unsigned c_size_lsb:2;
+	unsigned c_size_msb:10;
+	unsigned reserved_2:2;
+	unsigned dsr_imp:1;
+	unsigned read_blk_misalign:1;
+	unsigned write_blk_misalign:1;
+	unsigned read_bl_partial:1;
+	unsigned read_bl_len:4;
+	unsigned ccc:12;
+	unsigned tran_speed:8;
+	unsigned nsac:8;
+	unsigned taac:8;
+	unsigned reserved_3:2;
+	unsigned spec_vers:4;
+	unsigned csd_structure:2;
+} mmc_csd_reg_t;
 
-/* MMC_I_REG */
-#define MMC_I_REG_TXFIFO_WR_REQ     	(0x01UL << 6)
-#define MMC_I_REG_RXFIFO_RD_REQ     	(0x01UL << 5)
-#define MMC_I_REG_CLK_IS_OFF		(0x01UL << 4)
-#define MMC_I_REG_STOP_CMD      	(0x01UL << 3)
-#define MMC_I_REG_END_CMD_RES       	(0x01UL << 2)
-#define MMC_I_REG_PRG_DONE      	(0x01UL << 1)
-#define MMC_I_REG_DATA_TRAN_DONE    	(0x01UL)
-#define MMC_I_REG_ALL	   		(0x007fUL)
+/* csd for sd2.0 */
+typedef struct {
+	unsigned not_used:1;
+	unsigned crc:7;
+	unsigned reserved_1:2;
+	unsigned file_format:2;
+	unsigned tmp_write_protect:1;
+	unsigned perm_write_protect:1;
+	unsigned copy:1;
+	unsigned file_format_grp:1;
+	unsigned reserved_2:5;
+	unsigned write_bl_partial:1;
+	unsigned write_bl_len:4;
+	unsigned r2w_factor:3;
+	unsigned reserved_3:2;
+	unsigned wp_grp_enable:1;
+	unsigned wp_grp_size:7;
+	unsigned sector_size:7;
+	unsigned erase_blk_len:1;
+	unsigned reserved_4:1;
+	unsigned c_size_lsb:16;
+	unsigned c_size_msb:6;
+	unsigned reserved_5:6;
+	unsigned dsr_imp:1;
+	unsigned read_blk_misalign:1;
+	unsigned write_blk_misalign:1;
+	unsigned read_bl_partial:1;
+	unsigned read_bl_len:4;
+	unsigned ccc:12;
+	unsigned tran_speed:8;
+	unsigned nsac:8;
+	unsigned taac:8;
+	unsigned reserved_6:6;
+	unsigned csd_structure:2;
+} mmc_sd2_csd_reg_t;
 
-/* MMC_CMD */
-#define MMC_CMD_INDEX_MAX       	(0x006fUL)	/* [5:0] */
-#define CMD(x)  (x)
+/* extended csd - 512 bytes long */
+typedef struct {
+	unsigned char reserved_1[181];
+	unsigned char erasedmemorycontent;
+	unsigned char reserved_2;
+	unsigned char buswidthmode;
+	unsigned char reserved_3;
+	unsigned char highspeedinterfacetiming;
+	unsigned char reserved_4;
+	unsigned char powerclass;
+	unsigned char reserved_5;
+	unsigned char commandsetrevision;
+	unsigned char reserved_6;
+	unsigned char commandset;
+	unsigned char extendedcsdrevision;
+	unsigned char reserved_7;
+	unsigned char csdstructureversion;
+	unsigned char reserved_8;
+	unsigned char cardtype;
+	unsigned char reserved_9[3];
+	unsigned char powerclass_52mhz_1_95v;
+	unsigned char powerclass_26mhz_1_95v;
+	unsigned char powerclass_52mhz_3_6v;
+	unsigned char powerclass_26mhz_3_6v;
+	unsigned char reserved_10;
+	unsigned char minreadperf_4b_26mhz;
+	unsigned char minwriteperf_4b_26mhz;
+	unsigned char minreadperf_8b_26mhz_4b_52mhz;
+	unsigned char minwriteperf_8b_26mhz_4b_52mhz;
+	unsigned char minreadperf_8b_52mhz;
+	unsigned char minwriteperf_8b_52mhz;
+	unsigned char reserved_11;
+	unsigned int sectorcount;
+	unsigned char reserved_12[288];
+	unsigned char supportedcommandsets;
+	unsigned char reserved_13[7];
+} mmc_extended_csd_reg_t;
 
-#define MMC_DEFAULT_RCA			1
+/* mmc sd responce */
+typedef struct {
+	unsigned int ocr;
+} mmc_resp_r3;
 
-#define MMC_BLOCK_SIZE			512
-#define MMC_CMD_RESET			0
-#define MMC_CMD_SEND_OP_COND		1
-#define MMC_CMD_ALL_SEND_CID 		2
-#define MMC_CMD_SET_RCA			3
-#define MMC_CMD_SEND_CSD 		9
-#define MMC_CMD_SEND_CID 		10
-#define MMC_CMD_SEND_STATUS		13
-#define MMC_CMD_SET_BLOCKLEN		16
-#define MMC_CMD_READ_BLOCK		17
-#define MMC_CMD_RD_BLK_MULTI		18
-#define MMC_CMD_WRITE_BLOCK		24
+typedef struct {
+	unsigned short cardstatus;
+	unsigned short newpublishedrca;
+} mmc_resp_r6;
 
-#define MMC_MAX_BLOCK_SIZE		512
+extern mmc_card_data mmc_dev;
 
-#define MMC_R1_IDLE_STATE		0x01
-#define MMC_R1_ERASE_STATE		0x02
-#define MMC_R1_ILLEGAL_CMD		0x04
-#define MMC_R1_COM_CRC_ERR		0x08
-#define MMC_R1_ERASE_SEQ_ERR		0x01
-#define MMC_R1_ADDR_ERR			0x02
-#define MMC_R1_PARAM_ERR		0x04
+unsigned char mmc_lowlevel_init(void);
+unsigned char mmc_send_command(unsigned int cmd, unsigned int arg,
+			       unsigned int *response);
+unsigned char mmc_setup_clock(unsigned int iclk, unsigned short clkd);
+unsigned char mmc_set_opendrain(unsigned char state);
+unsigned char mmc_read_data(unsigned int *output_buf);
 
-#define MMC_R1B_WP_ERASE_SKIP		0x0002
-#define MMC_R1B_ERR			0x0004
-#define MMC_R1B_CC_ERR			0x0008
-#define MMC_R1B_CARD_ECC_ERR		0x0010
-#define MMC_R1B_WP_VIOLATION		0x0020
-#define MMC_R1B_ERASE_PARAM		0x0040
-#define MMC_R1B_OOR			0x0080
-#define MMC_R1B_IDLE_STATE		0x0100
-#define MMC_R1B_ERASE_RESET		0x0200
-#define MMC_R1B_ILLEGAL_CMD		0x0400
-#define MMC_R1B_COM_CRC_ERR		0x0800
-#define MMC_R1B_ERASE_SEQ_ERR		0x1000
-#define MMC_R1B_ADDR_ERR		0x2000
-#define MMC_R1B_PARAM_ERR		0x4000
-
-typedef struct mmc_cid {
-/* FIXME: BYTE_ORDER */
-	unsigned char year:4, month:4;
-	unsigned char sn[3];
-	unsigned char fwrev:4, hwrev:4;
-	unsigned char name[6];
-	unsigned char id[3];
-} mmc_cid_t;
-
-typedef struct mmc_csd {
-	unsigned char ecc:2,
-	    file_format:2,
-	    tmp_write_protect:1,
-	    perm_write_protect:1, copy:1, file_format_grp:1;
-	unsigned long int content_prot_app:1,
-	    rsvd3:4,
-	    write_bl_partial:1,
-	    write_bl_len:4,
-	    r2w_factor:3,
-	    default_ecc:2,
-	    wp_grp_enable:1,
-	    wp_grp_size:5,
-	    erase_grp_mult:5,
-	    erase_grp_size:5,
-	    c_size_mult1:3,
-	    vdd_w_curr_max:3,
-	    vdd_w_curr_min:3,
-	    vdd_r_curr_max:3,
-	    vdd_r_curr_min:3,
-	    c_size:12,
-	    rsvd2:2,
-	    dsr_imp:1,
-	    read_blk_misalign:1, write_blk_misalign:1, read_bl_partial:1;
-
-	unsigned short read_bl_len:4, ccc:12;
-	unsigned char tran_speed;
-	unsigned char nsac;
-	unsigned char taac;
-	unsigned char rsvd1:2, spec_vers:4, csd_structure:2;
-} mmc_csd_t;
-
-#endif				/* __MMC_PXA_P_H__ */
+#endif /* MMC_H */
