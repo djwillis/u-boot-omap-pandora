@@ -350,7 +350,7 @@ The following options need to be configured:
 		expect it to be in bytes, others in MB.
 		Define CONFIG_MEMSIZE_IN_BYTES to make it in bytes.
 
-		CONFIG_OF_LIBFDT / CONFIG_OF_FLAT_TREE
+		CONFIG_OF_LIBFDT
 
 		New kernel versions are expecting firmware settings to be
 		passed using flattened device trees (based on open firmware
@@ -360,13 +360,6 @@ The following options need to be configured:
 		 * New libfdt-based support
 		 * Adds the "fdt" command
 		 * The bootm command automatically updates the fdt
-
-		CONFIG_OF_FLAT_TREE
-		 * Deprecated, see CONFIG_OF_LIBFDT
-		 * Original ft_build.c-based support
-		 * Automatically modifies the dft as part of the bootm command
-		 * The environment variable "disable_of", when set,
-		     disables this functionality.
 
 		OF_CPU - The proper name of the cpus node.
 		OF_SOC - The proper name of the soc node.
@@ -785,6 +778,21 @@ The following options need to be configured:
 			CONFIG_SMC_USE_IOFUNCS
 			Define this to use i/o functions instead of macros
 			(some hardware wont work with macros)
+
+		CONFIG_DRIVER_SMC911X
+		Support for SMSC's LAN911x and LAN921x chips
+
+			CONFIG_DRIVER_SMC911X_BASE
+			Define this to hold the physical address
+			of the device (I/O space)
+
+			CONFIG_DRIVER_SMC911X_32_BIT
+			Define this if data bus is 32 bits
+
+			CONFIG_DRIVER_SMC911X_16_BIT
+			Define this if data bus is 16 bits. If your processor
+			automatically converts one 32 bit word to two 16 bit
+			words you may also try CONFIG_DRIVER_SMC911X_32_BIT.
 
 - USB Support:
 		At the moment only the UHCI host controller is

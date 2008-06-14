@@ -1,6 +1,5 @@
 #
-# (C) Copyright 2001-2006
-# Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+# Copyright (C) Freescale Semiconductor, Inc. 2006. All rights reserved.
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -21,30 +20,6 @@
 # MA 02111-1307 USA
 #
 
-include $(TOPDIR)/config.mk
+sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
 
-LIB	= $(obj)lib$(BOARD).a
-
-COBJS	:= $(BOARD).o sdram.o law.o tlb.o
-
-SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
-OBJS	:= $(addprefix $(obj),$(COBJS))
-SOBJS	:= $(addprefix $(obj),$(SOBJS))
-
-$(LIB):	$(obj).depend $(OBJS) $(SOBJS)
-	$(AR) $(ARFLAGS) $@ $(OBJS)
-
-clean:
-	rm -f $(OBJS) $(SOBJS)
-
-distclean:	clean
-	rm -f $(LIB) core *.bak .depend
-
-#########################################################################
-
-# defines $(obj).depend target
-include $(SRCTREE)/rules.mk
-
-sinclude $(obj).depend
-
-#########################################################################
+TEXT_BASE  = 0xFFF00000

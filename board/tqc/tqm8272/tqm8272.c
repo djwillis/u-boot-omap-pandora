@@ -30,10 +30,6 @@
 #include <pci.h>
 #include <asm/m8260_pci.h>
 #endif
-#if CONFIG_OF_FLAT_TREE
-#include <ft_build.h>
-#include <image.h>
-#endif
 
 #if 0
 #define deb_printf(fmt,arg...) \
@@ -559,7 +555,7 @@ static long int try_init (volatile memctl8260_t * memctl, ulong sdmr,
 	return (size);
 }
 
-long int initdram (int board_type)
+phys_size_t initdram (int board_type)
 {
 	volatile immap_t *immap = (immap_t *) CFG_IMMR;
 	volatile memctl8260_t *memctl = &immap->im_memctl;
