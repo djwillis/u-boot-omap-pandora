@@ -48,7 +48,8 @@ static unsigned long read_p15_c1(void)
 {
 	unsigned long value;
 
-      __asm__ __volatile__("mrc	p15, 0, %0, c1, c0, 0   @ read control reg\n":"=r"(value)
+	__asm__ __volatile__("mrc p15, 0, %0, c1, c0, 0\
+			     @ read control reg\n":"=r"(value)
 			     ::"memory");
 	return value;
 }
@@ -56,10 +57,9 @@ static unsigned long read_p15_c1(void)
 /* write to co-processor 15, register #1 (control register) */
 static void write_p15_c1(unsigned long value)
 {
-	__asm__
-	    __volatile__
-	    ("mcr	p15, 0, %0, c1, c0, 0   @ write it back\n"::"r"(value)
-      :     "memory");
+	__asm__ __volatile__("mcr p15, 0, %0, c1, c0, 0\
+			     @ write it back\n"::"r"(value)
+			     : "memory");
 
 	read_p15_c1();
 }
@@ -99,6 +99,8 @@ int cpu_init(void)
 
 int cleanup_before_linux(void)
 {
+	unsigned int i;
+
 	/*
 	 * this function is called just before we call linux
 	 * it prepares the processor for linux
@@ -107,49 +109,37 @@ int cleanup_before_linux(void)
 	 */
 	disable_interrupts();
 
-#ifdef CONFIG_LCD
-	{
-		extern void lcd_disable(void);
-		extern void lcd_panel_disable(void);
+	/* turn off I/D-cache */
+	asm("mrc p15, 0, %0, c1, c0, 0":"=r"(i));
+	i &= ~(C1_DC | C1_IC);
+	asm("mcr p15, 0, %0, c1, c0, 0": :"r"(i));
 
-		lcd_disable();	/* proper disable of lcd & panel */
-		lcd_panel_disable();
-	}
-#endif
-
-	{
-		unsigned int i;
-
-		/* turn off I/D-cache */
-	      asm("mrc p15, 0, %0, c1, c0, 0":"=r"(i));
-		i &= ~(C1_DC | C1_IC);
-	      asm("mcr p15, 0, %0, c1, c0, 0": :"r"(i));
-
-		/* invalidate I-cache */
-		arm_cache_flush();
+	/* invalidate I-cache */
+	arm_cache_flush();
 #ifndef CONFIG_L2_OFF
-		/* turn off L2 cache */
-		l2cache_disable();
-		/* invalidate L2 cache also */
-		v7_flush_dcache_all(get_device_type());
+	/* turn off L2 cache */
+	l2cache_disable();
+	/* invalidate L2 cache also */
+	v7_flush_dcache_all(get_device_type());
 #endif
-		i = 0;
-		/* mem barrier to sync up things */
-	      asm("mcr p15, 0, %0, c7, c10, 4": :"r"(i));
+	i = 0;
+	/* mem barrier to sync up things */
+	asm("mcr p15, 0, %0, c7, c10, 4": :"r"(i));
 
 #ifndef CONFIG_L2_OFF
 	l2cache_enable();
 #endif
-	}
 
 	return (0);
 }
 
-int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	disable_interrupts();
 	reset_cpu(0);
-	 /*NOTREACHED*/ return (0);
+
+	/* NOTREACHED */
+	return (0);
 }
 
 void icache_enable(void)

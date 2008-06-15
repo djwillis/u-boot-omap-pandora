@@ -168,9 +168,6 @@ void do_irq(struct pt_regs *pt_regs)
 	bad_mode();
 }
 
-#if defined(CONFIG_INTEGRATOR) && defined(CONFIG_ARCH_CINTEGRATOR)
-/* Use the IntegratorCP function from board/integratorcp.c */
-#else
 
 static ulong timestamp;
 static ulong lastinc;
@@ -181,8 +178,10 @@ int interrupt_init(void)
 	int32_t val;
 
 	/* Start the counter ticking up */
-	*((int32_t *) (CFG_TIMERBASE + TLDR)) = TIMER_LOAD_VAL;	/* reload value on overflow */
-	val = (CFG_PVT << 2) | BIT5 | BIT1 | BIT0;	/* mask to enable timer */
+	/* reload value on overflow */
+	*((int32_t *) (CFG_TIMERBASE + TLDR)) = TIMER_LOAD_VAL;
+	/* mask to enable timer */
+	val = (CFG_PVT << 2) | BIT5 | BIT1 | BIT0;
 	*((int32_t *) (CFG_TIMERBASE + TCLR)) = val;	/* start timer */
 
 	reset_timer_masked();	/* init the timestamp and lastinc value */
@@ -213,18 +212,23 @@ void udelay(unsigned long usec)
 {
 	ulong tmo, tmp;
 
-	if (usec >= 1000) {	/* if "big" number, spread normalization to seconds */
-		tmo = usec / 1000;	/* start to normalize for usec to ticks per sec */
-		tmo *= CFG_HZ;	/* find number of "ticks" to wait to achieve target */
+	/* if "big" number, spread normalization to seconds */
+	if (usec >= 1000) {
+		/* if "big" number, spread normalization to seconds */
+		tmo = usec / 1000;
+		/* find number of "ticks" to wait to achieve target */
+		tmo *= CFG_HZ;
 		tmo /= 1000;	/* finish normalize. */
-	} else {		/* else small number, don't kill it prior to HZ multiply */
+	} else {/* else small number, don't kill it prior to HZ multiply */
 		tmo = usec * CFG_HZ;
 		tmo /= (1000 * 1000);
 	}
 
 	tmp = get_timer(0);	/* get current timestamp */
-	if ((tmo + tmp + 1) < tmp)	/* if setting this forward will roll time stamp */
-		reset_timer_masked();	/* reset "advancing" timestamp to 0, set lastinc value */
+	/* if setting this forward will roll time stamp */
+	if ((tmo + tmp + 1) < tmp)
+		/* reset "advancing" timestamp to 0, set lastinc value */
+		reset_timer_masked();
 	else
 		tmo += tmp;	/* else, set advancing stamp wake up time */
 	while (get_timer_masked() < tmo)	/* loop till event */
@@ -243,8 +247,9 @@ ulong get_timer_masked(void)
 	ulong now = READ_TIMER;	/* current tick value */
 
 	if (now >= lastinc)	/* normal mode (non roll) */
-		timestamp += (now - lastinc);	/* move stamp fordward with absoulte diff ticks */
-	else			/* we have rollover of incrementer */
+		/* move stamp fordward with absoulte diff ticks */
+		timestamp += (now - lastinc);
+	else	/* we have rollover of incrementer */
 		timestamp += (0xFFFFFFFF - lastinc) + now;
 	lastinc = now;
 	return timestamp;
@@ -257,11 +262,15 @@ void udelay_masked(unsigned long usec)
 	ulong endtime;
 	signed long diff;
 
-	if (usec >= 1000) {	/* if "big" number, spread normalization to seconds */
-		tmo = usec / 1000;	/* start to normalize for usec to ticks per sec */
-		tmo *= CFG_HZ;	/* find number of "ticks" to wait to achieve target */
+	/* if "big" number, spread normalization to seconds */
+	if (usec >= 1000) {
+		/* start to normalize for usec to ticks per sec */
+		tmo = usec / 1000;
+		/* find number of "ticks" to wait to achieve target */
+		tmo *= CFG_HZ;
 		tmo /= 1000;	/* finish normalize. */
-	} else {		/* else small number, don't kill it prior to HZ multiply */
+	} else {		/* else small number, */
+				/* don't kill it prior to HZ multiply */
 		tmo = usec * CFG_HZ;
 		tmo /= (1000 * 1000);
 	}
@@ -292,4 +301,4 @@ ulong get_tbclk(void)
 	tbclk = CFG_HZ;
 	return tbclk;
 }
-#endif				/* !Integrator/CP */
+

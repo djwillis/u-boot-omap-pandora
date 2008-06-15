@@ -30,15 +30,11 @@
 #include <i2c.h>
 
 /**************************************************************************
- * get_cpu_type() - Read the FPGA Debug registers and provide the DIP switch 
- *    settings
- * 1 is on
- * 0 is off
- * Will return Index of type of gpmc
+ * get_gpmc0_type()
  ***************************************************************************/
 u32 get_gpmc0_type(void)
 {
-	// Default NAND
+	/* Default NAND */
 	return (2);
 }
 
@@ -48,7 +44,7 @@ u32 get_gpmc0_type(void)
  ****************************************************/
 u32 get_cpu_type(void)
 {
-	// fixme, need to get register defines for OMAP3
+	/* fixme, need to get register defines for OMAP3 */
 	return (CPU_3430);
 }
 
