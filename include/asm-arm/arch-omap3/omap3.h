@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006
+ * (C) Copyright 2006-2008
  * Texas Instruments, <www.ti.com>
  * Richard Woodruff <r-woodruff2@ti.com>
  * Syed Mohammed Khasim <x0khasim@ti.com>
@@ -23,22 +23,11 @@
  * MA 02111-1307 USA
  */
 
-#ifndef _OMAP3430_SYS_H_
-#define _OMAP3430_SYS_H_
-
-#include <asm/arch/sizes.h>
-
-/*
- * 3430 specific Section
- */
+#ifndef _OMAP3_H_
+#define _OMAP3_H_
 
 /* Stuff on L3 Interconnect */
 #define SMX_APE_BASE			0x68000000
-
-/* L3 Firewall */
-#define A_REQINFOPERM0		(SMX_APE_BASE + 0x05048)
-#define A_READPERM0		(SMX_APE_BASE + 0x05050)
-#define A_WRITEPERM0		(SMX_APE_BASE + 0x05058)
 
 /* GPMC */
 #define OMAP34XX_GPMC_BASE		(0x6E000000)
@@ -53,18 +42,12 @@
  * L4 Peripherals - L4 Wakeup and L4 Core now
  */
 #define OMAP34XX_CORE_L4_IO_BASE	0x48000000
-
 #define OMAP34XX_WAKEUP_L4_IO_BASE	0x48300000
-
 #define OMAP34XX_L4_PER			0x49000000
-
 #define OMAP34XX_L4_IO_BASE		OMAP34XX_CORE_L4_IO_BASE
 
 /* CONTROL */
 #define OMAP34XX_CTRL_BASE		(OMAP34XX_L4_IO_BASE+0x2000)
-
-/* TAP information  dont know for 3430*/
-#define OMAP34XX_TAP_BASE		(0x49000000)	/*giving some junk for virtio */
 
 /* UART */
 #define OMAP34XX_UART1			(OMAP34XX_L4_IO_BASE+0x6a000)
@@ -102,53 +85,47 @@
 #define OMAP34XX_GPIO5_BASE		0x49056000
 #define OMAP34XX_GPIO6_BASE		0x49058000
 
-/*
- * SDP3430 specific Section
- */
-
-/*
- *  The 343x's chip selects are programmable.  The mask ROM
- *  does configure CS0 to 0x08000000 before dispatch.  So, if
- *  you want your code to live below that address, you have to
- *  be prepared to jump though hoops, to reset the base address.
- *  Same as in SDP3430
- */
-#if (CONFIG_3430SDP)
-
 /* base address for indirect vectors (internal boot mode) */
 #define SRAM_OFFSET0			0x40000000
 #define SRAM_OFFSET1			0x00200000
 #define SRAM_OFFSET2			0x0000F800
-#define SRAM_VECT_CODE			(SRAM_OFFSET0|SRAM_OFFSET1|SRAM_OFFSET2)
-
-#define LOW_LEVEL_SRAM_STACK		0x4020FFFC
-
-/* FPGA on Debug board.*/
-#define ETH_CONTROL_REG			(DEBUG_BASE+0x30b)
-#define LAN_RESET_REGISTER		(DEBUG_BASE+0x1c)
-
-#define DIP_SWITCH_INPUT_REG2		(DEBUG_BASE+0x60)
-#define LED_REGISTER			(DEBUG_BASE+0x40)
-#define FPGA_REV_REGISTER		(DEBUG_BASE+0x10)
-#define EEPROM_MAIN_BRD			(DEBUG_BASE+0x10000+0x1800)
-#define EEPROM_CONN_BRD			(DEBUG_BASE+0x10000+0x1900)
-#define EEPROM_UI_BRD			(DEBUG_BASE+0x10000+0x1A00)
-#define EEPROM_MCAM_BRD			(DEBUG_BASE+0x10000+0x1B00)
-#define ENHANCED_UI_EE_NAME		"750-2075"
-
-#elif (CONFIG_OMAP3_BEAGLE)
-
-/* base address for indirect vectors (internal boot mode) */
-#define SRAM_OFFSET0			0x40000000
-#define SRAM_OFFSET1			0x00200000
-#define SRAM_OFFSET2			0x0000F800
-#define SRAM_VECT_CODE			(SRAM_OFFSET0|SRAM_OFFSET1|SRAM_OFFSET2)
+#define SRAM_VECT_CODE			(SRAM_OFFSET0|SRAM_OFFSET1|\
+					 SRAM_OFFSET2)
 
 #define LOW_LEVEL_SRAM_STACK		0x4020FFFC
 
 #define DEBUG_LED1			149	/* gpio */
 #define DEBUG_LED2			150	/* gpio */
 
-#endif				/* endif (CONFIG_3430SDP)  */
+#define XDR_POP		5	/* package on package part */
+#define SDR_DISCRETE	4	/* 128M memory SDR module */
+#define DDR_STACKED	3	/* stacked part on 2422 */
+#define DDR_COMBO	2	/* combo part on cpu daughter card */
+#define DDR_DISCRETE	1	/* 2x16 parts on daughter card */
+
+#define DDR_100		100	/* type found on most mem d-boards */
+#define DDR_111		111	/* some combo parts */
+#define DDR_133		133	/* most combo, some mem d-boards */
+#define DDR_165		165	/* future parts */
+
+#define CPU_3430	0x3430
+
+/* 343x real hardware:
+ *  ES1     = rev 0
+ */
+
+/* 343x code defines:
+ * ES1     = 0+1 = 1
+ * ES1     = 1+1 = 1
+ */
+#define CPU_3430_ES1		1
+#define CPU_3430_ES2		2
+
+#define WIDTH_8BIT		0x0000
+#define WIDTH_16BIT		0x1000	/* bit pos for 16 bit in gpmc */
+
+/* SDP definitions according to FPGA Rev. Is this OK?? */
+#define SDP_3430_V1		0x1
+#define SDP_3430_V2		0x2
 
 #endif

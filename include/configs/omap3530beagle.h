@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006
+ * (C) Copyright 2006-2008
  * Texas Instruments.
  * Richard Woodruff <r-woodruff2@ti.com>
  * Syed Mohammed Khasim <x0khasim@ti.com>
  *
- * Configuration settings for the 3430 TI SDP3430 board.
+ * Configuration settings for the TI OMAP3530 Beagle board.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -27,6 +27,7 @@
 
 #ifndef __CONFIG_H
 #define __CONFIG_H
+#include <asm/sizes.h>
 
 /*
  * High Level Configuration Options
@@ -39,6 +40,7 @@
 #define CONFIG_DOS_PARTITION	1
 
 #include <asm/arch/cpu.h>	/* get chip and board defs */
+#include <asm/arch/omap3.h>
 
 /* Clock Defines */
 #define V_OSCK                   26000000	/* Clock output from T2 */
@@ -55,9 +57,9 @@
 /*
  * Size of malloc() pool
  */
-#define CFG_ENV_SIZE             SZ_128K	/* Total Size Environment Sector */
+#define CFG_ENV_SIZE             SZ_128K /* Total Size Environment Sector */
 #define CFG_MALLOC_LEN           (CFG_ENV_SIZE + SZ_128K)
-#define CFG_GBL_DATA_SIZE        128	/* bytes reserved for initial data */
+#define CFG_GBL_DATA_SIZE        128	 /* bytes reserved for initial data */
 
 /*
  * Hardware drivers
@@ -139,15 +141,16 @@
 #define CFG_NAND_WP
 
 #define CONFIG_JFFS2_NAND
-#define CONFIG_JFFS2_DEV		"nand0"		/* nand device jffs2 lives on */
-#define CONFIG_JFFS2_PART_OFFSET	0x680000	/* start of jffs2 partition */
+/* nand device jffs2 lives on */
+#define CONFIG_JFFS2_DEV		"nand0"
+/* start of jffs2 partition */
+#define CONFIG_JFFS2_PART_OFFSET	0x680000
 #define CONFIG_JFFS2_PART_SIZE 	0xf980000	/* size of jffs2 partition */
 
 /* Environment information */
 #define CONFIG_BOOTDELAY         10
 
-#define CONFIG_BOOTCOMMAND \
-        "mmcinit;fatload mmc 0 0x80300000 uImage; fatload mmc 0 0x81600000 rd-ext2.bin; bootm 0x80300000\0"
+#define CONFIG_BOOTCOMMAND "mmcinit;fatload mmc 0 0x80300000 uImage; fatload mmc 0 0x81600000 rd-ext2.bin; bootm 0x80300000\0"
 
 #define CONFIG_BOOTARGS "setenv bootargs console=ttyS2,115200n8 ramdisk_size=3072 root=/dev/ram0 rw rootfstype=ext2 initrd=0x81600000,3M "
 
@@ -170,11 +173,11 @@
 #define CFG_BARGSIZE             CFG_CBSIZE	/* Boot Argument Buffer Size */
 
 #define CFG_MEMTEST_START        (OMAP34XX_SDRC_CS0)	/* memtest works on */
-#define CFG_MEMTEST_END          (OMAP34XX_SDRC_CS0+SZ_31M)
+#define CFG_MEMTEST_END          (OMAP34XX_SDRC_CS0+0x01F00000) /* 31MB */
 
 #undef	CFG_CLKS_IN_HZ		/* everything, incl board info, in Hz */
 
-#define CFG_LOAD_ADDR            (OMAP34XX_SDRC_CS0)	/* default load address */
+#define CFG_LOAD_ADDR            (OMAP34XX_SDRC_CS0) /* default load address */
 
 /* 2430 has 12 GP timers, they can be driven by the SysClk (12/13/19.2) or by
  * 32KHz clk, or from external sig. This rate is divided by a local divisor.
@@ -270,14 +273,18 @@ extern unsigned int boot_flash_type;
 #endif
 
 
-#define WRITE_NAND_COMMAND(d, adr) __raw_writew(d, (nand_cs_base + GPMC_NAND_CMD))
-#define WRITE_NAND_ADDRESS(d, adr) __raw_writew(d, (nand_cs_base + GPMC_NAND_ADR))
+#define WRITE_NAND_COMMAND(d, adr)\
+		       __raw_writew(d, (nand_cs_base + GPMC_NAND_CMD))
+#define WRITE_NAND_ADDRESS(d, adr)\
+		       __raw_writew(d, (nand_cs_base + GPMC_NAND_ADR))
 #define WRITE_NAND(d, adr) __raw_writew(d, (nand_cs_base + GPMC_NAND_DAT))
 #define READ_NAND(adr) __raw_readw((nand_cs_base + GPMC_NAND_DAT))
 
 /* Other NAND Access APIs */
-#define NAND_WP_OFF()  do {*(volatile u32 *)(GPMC_CONFIG) |= 0x00000010;} while(0)
-#define NAND_WP_ON()  do {*(volatile u32 *)(GPMC_CONFIG) &= ~0x00000010;} while(0)
+#define NAND_WP_OFF()\
+		do {*(volatile u32 *)(GPMC_CONFIG) |= 0x00000010; } while (0)
+#define NAND_WP_ON()\
+		do {*(volatile u32 *)(GPMC_CONFIG) &= ~0x00000010; } while (0)
 #define NAND_DISABLE_CE(nand)
 #define NAND_ENABLE_CE(nand)
 #define NAND_WAIT_READY(nand)	udelay(10)

@@ -34,10 +34,6 @@
 #include <common.h>
 #include <command.h>
 #include <asm/arch/sys_proto.h>
-#if !defined(CONFIG_INTEGRATOR) && ! defined(CONFIG_ARCH_CINTEGRATOR)
-#include <asm/arch/cpu.h>
-#endif
-#include <asm/arch/sys_info.h>
 
 #ifdef CONFIG_USE_IRQ
 DECLARE_GLOBAL_DATA_PTR;

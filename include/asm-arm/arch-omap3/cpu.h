@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006
+ * (C) Copyright 2006-2008
  * Texas Instruments, <www.ti.com>
  *
  * See file CREDITS for list of people who contributed to this
@@ -22,9 +22,8 @@
  *
  */
 
-#ifndef _OMAP34XX_CPU_H
-#define  _OMAP34XX_CPU_H
-#include <asm/arch/omap3.h>
+#ifndef _CPU_H
+#define _CPU_H
 
 /* Register offsets of common modules */
 /* Control */
@@ -81,13 +80,18 @@
 #define GPMC_ECC9_RESULT	(0x220)
 
 /* GPMC Mapping */
-# define FLASH_BASE		0x10000000	/* NOR flash (aligned to 256 Meg) */
-# define FLASH_BASE_SDPV1	0x04000000	/* NOR flash (aligned to 64 Meg) */
-# define FLASH_BASE_SDPV2	0x10000000	/* NOR flash (aligned to 256 Meg) */
+# define FLASH_BASE		0x10000000	/* NOR flash, */
+						/* aligned to 256 Meg */
+# define FLASH_BASE_SDPV1	0x04000000	/* NOR flash, */
+						/* aligned to 64 Meg */
+# define FLASH_BASE_SDPV2	0x10000000	/* NOR flash, */
+						/* aligned to 256 Meg */
 # define DEBUG_BASE		0x08000000	/* debug board */
-# define NAND_BASE		0x30000000	/* NAND addr (actual size small port) */
+# define NAND_BASE		0x30000000	/* NAND addr */
+						/* (actual size small port) */
 # define PISMO2_BASE		0x18000000	/* PISMO2 CS1/2 */
-# define ONENAND_MAP		0x20000000	/* OneNand addr (actual size small port */
+# define ONENAND_MAP		0x20000000	/* OneNand addr */
+						/* (actual size small port) */
 
 /* SMS */
 #define SMS_SYSCONFIG		(OMAP34XX_SMS_BASE+0x10)
@@ -151,7 +155,8 @@
 #define TCAR1			0x3c	/* r */
 #define TSICR			0x40	/* rw */
 #define TCAR2			0x44	/* r */
-#define GPT_EN			((0<<2)|BIT1|BIT0)	/* enable sys_clk NO-prescale /1 */
+ /* enable sys_clk NO-prescale /1 */
+#define GPT_EN			((0<<2)|BIT1|BIT0)
 
 /* Watchdog */
 #define WWPS			0x34	/* r */
@@ -242,4 +247,4 @@
 #define I2C_BASE2		(OMAP34XX_CORE_L4_IO_BASE + 0x72000)
 #define I2C_BASE3		(OMAP34XX_CORE_L4_IO_BASE + 0x60000)
 
-#endif
+#endif /* _CPU_H */

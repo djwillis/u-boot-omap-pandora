@@ -35,10 +35,6 @@
 #include <common.h>
 #include <asm/arch/bits.h>
 
-#if !defined(CONFIG_INTEGRATOR) && ! defined(CONFIG_ARCH_CINTEGRATOR)
-# include <asm/arch/cpu.h>
-#endif
-
 #include <asm/proc-armv/ptrace.h>
 
 #define TIMER_LOAD_VAL 0

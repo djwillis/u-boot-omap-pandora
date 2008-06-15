@@ -23,12 +23,10 @@
  */
 
 #include <common.h>
-#include <asm/arch/cpu.h>
 #include <asm/io.h>
 #include <asm/arch/bits.h>
 #include <asm/arch/mem.h>	/* get mem tables */
 #include <asm/arch/sys_proto.h>
-#include <asm/arch/sys_info.h>
 #include <i2c.h>
 
 /**************************************************************************

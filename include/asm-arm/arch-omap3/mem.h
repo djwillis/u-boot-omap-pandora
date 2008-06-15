@@ -26,7 +26,7 @@
 #define _MEM_H_
 
 #define SDRC_CS0_OSET    0x0
-#define SDRC_CS1_OSET    0x30	/* mirror CS1 regs appear offset 0x30 from CS0 */
+#define SDRC_CS1_OSET    0x30 /* mirror CS1 regs appear offset 0x30 from CS0 */
 
 #ifndef __ASSEMBLY__
 
@@ -46,7 +46,7 @@ typedef enum {
 #define SDP_SDRC_MR_0_SDR		0x00000031
 
 /* optimized timings good for current shipping parts */
-#define SDP_3430_SDRC_RFR_CTRL_165MHz   0x0004e201	/* 7.8us/6ns - 50=0x4e2 */
+#define SDP_3430_SDRC_RFR_CTRL_165MHz   0x0004e201  /* 7.8us/6ns - 50=0x4e2 */
 
 #define DLL_OFFSET              0
 #define DLL_WRITEDDRCLKX2DIS    1
@@ -55,7 +55,7 @@ typedef enum {
 #define DLL_DLLPHASE_72         0
 #define DLL_DLLPHASE_90         1
 
-// rkw - need to find of 90/72 degree recommendation for speed like before.
+/* rkw - need to find of 90/72 degree recommendation for speed like before */
 #define SDP_SDRC_DLLAB_CTRL ((DLL_ENADLL << 3) | \
     (DLL_LOCKDLL << 2) | (DLL_DLLPHASE_90 << 1))
 
@@ -82,15 +82,15 @@ typedef enum {
 #define TRC_165   10
 #define TRFC_165  12
 #define V_ACTIMA_165 ((TRFC_165 << 27) | (TRC_165 << 22) | (TRAS_165 << 18) \
-		| (TRP_165 << 15) | (TRCD_165 << 12) |(TRRD_165 << 9) | \
+		| (TRP_165 << 15) | (TRCD_165 << 12) | (TRRD_165 << 9) | \
 		(TDPL_165 << 6) | (TDAL_165))
 
 #define TWTR_165   1
 #define TCKE_165   2
 #define TXP_165    2
 #define XSR_165    20
-#define V_ACTIMB_165 ((TCKE_165 << 12) | (XSR_165 << 0)) | \
-				(TXP_165 << 8) | (TWTR_165 << 16)
+#define V_ACTIMB_165 (((TCKE_165 << 12) | (XSR_165 << 0)) |	\
+			(TXP_165 << 8) | (TWTR_165 << 16))
 
 # define SDP_SDRC_ACTIM_CTRLA_0     V_ACTIMA_165
 # define SDP_SDRC_ACTIM_CTRLB_0     V_ACTIMB_165
@@ -105,9 +105,9 @@ typedef enum {
  * x is GPMC config registers from 1 to 6 (there will be 6 macros)
  * Value is corresponding value
  *
- * For every valid PRCM configuration there should be only one definition of 
- * the same. if values are independent of the board, this definition will be 
- * present in this file if values are dependent on the board, then this should 
+ * For every valid PRCM configuration there should be only one definition of
+ * the same. if values are independent of the board, this definition will be
+ * present in this file if values are dependent on the board, then this should
  * go into corresponding mem-boardName.h file
  *
  * Currently valid part Names are (PART):

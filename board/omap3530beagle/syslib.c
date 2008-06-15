@@ -22,13 +22,11 @@
  */
 
 #include <common.h>
-#include <asm/arch/cpu.h>
 #include <asm/io.h>
 #include <asm/arch/bits.h>
 #include <asm/arch/mem.h>
 #include <asm/arch/clocks.h>
 #include <asm/arch/sys_proto.h>
-#include <asm/arch/sys_info.h>
 
 /************************************************************
  * sdelay() - simple spin loop.  Will be constant time as

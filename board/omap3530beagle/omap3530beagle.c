@@ -30,12 +30,10 @@
  * MA 02111-1307 USA
  */
 #include <common.h>
-#include <asm/arch/cpu.h>
 #include <asm/io.h>
 #include <asm/arch/bits.h>
 #include <asm/arch/mux.h>
 #include <asm/arch/sys_proto.h>
-#include <asm/arch/sys_info.h>
 #include <asm/arch/mem.h>
 #include <i2c.h>
 #include <asm/mach-types.h>

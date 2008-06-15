@@ -31,7 +31,6 @@
 
 #include <config.h>
 #include <version.h>
-#include <asm/arch/cpu.h>
 
 .globl _start
 _start: b	reset

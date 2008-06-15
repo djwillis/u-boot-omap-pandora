@@ -23,7 +23,6 @@
  */
 
 #include <common.h>
-#include <asm/arch/cpu.h>
 #include <asm/io.h>
 #include <asm/arch/bits.h>
 #include <asm/arch/mem.h>

@@ -23,7 +23,6 @@
 
 #include <common.h>
 #include <asm/io.h>
-#include <asm/arch/cpu.h>
 #include <asm/arch/mem.h>
 #include <linux/mtd/nand_ecc.h>
 
