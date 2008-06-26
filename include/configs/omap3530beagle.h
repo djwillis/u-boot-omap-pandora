@@ -150,9 +150,9 @@
 /* Environment information */
 #define CONFIG_BOOTDELAY         10
 
-#define CONFIG_BOOTCOMMAND "mmcinit;fatload mmc 0 0x80300000 uImage; fatload mmc 0 0x81600000 rd-ext2.bin; bootm 0x80300000\0"
+#define CONFIG_BOOTCOMMAND "nand read 80200000 280000 400000 ; bootm 80200000"
 
-#define CONFIG_BOOTARGS "setenv bootargs console=ttyS2,115200n8 ramdisk_size=3072 root=/dev/ram0 rw rootfstype=ext2 initrd=0x81600000,3M "
+#define CONFIG_BOOTARGS "setenv bootargs console=ttyS2,115200n8 noinitrd root=/dev/mtdblock4 rw rootfstype=jffs2"
 
 #define CONFIG_NETMASK           255.255.254.0
 #define CONFIG_IPADDR            128.247.77.90
