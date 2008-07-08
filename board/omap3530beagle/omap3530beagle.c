@@ -267,8 +267,6 @@ int misc_init_r(void)
 	*((uint *) 0x49058094) = 0x00000506;
 	*((uint *) 0x49056094) = 0xF060F000;
 
-	/* set clksel_tv and clksel_dss1 to DPLL4 clock divided by 1 */
-	*((uint *) 0x48004E40) = 0x00001001;
 	return (0);
 }
 
