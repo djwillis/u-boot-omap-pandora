@@ -25,19 +25,21 @@ void lmb_dump_all(struct lmb *lmb)
 	debug("    memory.size		   = 0x%llx\n",
 	      (unsigned long long)lmb->memory.size);
 	for (i=0; i < lmb->memory.cnt ;i++) {
-		debug("    memory.reg[0x%x].base   = 0x%llx\n", i,
-			lmb->memory.region[i].base);
+		debug("    memory.reg[0x%lx].base   = 0x%llx\n", i,
+			(long long unsigned)lmb->memory.region[i].base);
 		debug("		   .size   = 0x%llx\n",
-			lmb->memory.region[i].size);
+			(long long unsigned)lmb->memory.region[i].size);
 	}
 
-	debug("\n    reserved.cnt	   = 0x%lx\n", lmb->reserved.cnt);
-	debug("    reserved.size	   = 0x%llx\n", lmb->reserved.size);
+	debug("\n    reserved.cnt	   = 0x%lx\n",
+		lmb->reserved.cnt);
+	debug("    reserved.size	   = 0x%llx\n",
+		(long long unsigned)lmb->reserved.size);
 	for (i=0; i < lmb->reserved.cnt ;i++) {
-		debug("    reserved.reg[0x%x].base = 0x%llx\n", i,
-			lmb->reserved.region[i].base);
+		debug("    reserved.reg[0x%lx].base = 0x%llx\n", i,
+			(long long unsigned)lmb->reserved.region[i].base);
 		debug("		     .size = 0x%llx\n",
-			lmb->reserved.region[i].size);
+			(long long unsigned)lmb->reserved.region[i].size);
 	}
 #endif /* DEBUG */
 }
@@ -181,11 +183,11 @@ long lmb_add(struct lmb *lmb, phys_addr_t base, phys_size_t size)
 	return lmb_add_region(_rgn, base, size);
 }
 
-long lmb_free(struct lmb *lmb, u64 base, u64 size)
+long lmb_free(struct lmb *lmb, phys_addr_t base, phys_size_t size)
 {
 	struct lmb_region *rgn = &(lmb->reserved);
-	u64 rgnbegin, rgnend;
-	u64 end = base + size;
+	phys_addr_t rgnbegin, rgnend;
+	phys_addr_t end = base + size;
 	int i;
 
 	rgnbegin = rgnend = 0; /* supress gcc warnings */
@@ -266,7 +268,7 @@ phys_addr_t lmb_alloc_base(struct lmb *lmb, phys_size_t size, ulong align, phys_
 
 	if (alloc == 0)
 		printf("ERROR: Failed to allocate 0x%lx bytes below 0x%lx.\n",
-		      size, max_addr);
+		      (ulong)size, (ulong)max_addr);
 
 	return alloc;
 }

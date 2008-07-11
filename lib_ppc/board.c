@@ -625,7 +625,7 @@ void board_init_f (ulong bootflag)
     defined(CONFIG_440EPX) || defined(CONFIG_440GRX)
 	bd->bi_pci_busfreq = get_PCI_freq ();
 	bd->bi_opbfreq = get_OPB_freq ();
-#elif defined(CONFIG_XILINX_ML300)
+#elif defined(CONFIG_XILINX_405)
 	bd->bi_pci_busfreq = get_PCI_freq ();
 #endif
 #endif
@@ -786,7 +786,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 		 */
 		s = getenv ("flashchecksum");
 		if (s && (*s == 'y')) {
-			printf ("  CRC: %08lX",
+			printf ("  CRC: %08X",
 				crc32 (0, (const unsigned char *) CFG_FLASH_BASE, flash_size)
 			);
 		}

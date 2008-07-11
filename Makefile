@@ -220,6 +220,7 @@ LIBS += drivers/hwmon/libhwmon.a
 LIBS += drivers/i2c/libi2c.a
 LIBS += drivers/input/libinput.a
 LIBS += drivers/misc/libmisc.a
+LIBS += drivers/mmc/libmmc.a
 LIBS += drivers/mtd/libmtd.a
 LIBS += drivers/mtd/nand/libnand.a
 LIBS += drivers/mtd/nand_legacy/libnand_legacy.a
@@ -387,6 +388,7 @@ TAG_SUBDIRS += drivers/hwmon
 TAG_SUBDIRS += drivers/i2c
 TAG_SUBDIRS += drivers/input
 TAG_SUBDIRS += drivers/misc
+TAG_SUBDIRS += drivers/mmc
 TAG_SUBDIRS += drivers/mtd
 TAG_SUBDIRS += drivers/mtd/nand
 TAG_SUBDIRS += drivers/mtd/nand_legacy
@@ -748,12 +750,11 @@ motionpro_config:	unconfig
 ## MPC512x Systems
 #########################################################################
 ads5121_config \
-ads5121_PCI_config \
-	:		 unconfig
+ads5121_rev2_config	\
+	: unconfig
 	@mkdir -p $(obj)include
-	@if [ "$(findstring _PCI_,$@)" ] ; then \
-		echo "#define CONFIG_PCI"  >>$(obj)include/config.h ; \
-		$(XECHO) "... with PCI enabled" ; \
+	@if [ "$(findstring rev2,$@)" ] ; then \
+		echo "#define CONFIG_ADS5121_REV2 1" > $(obj)include/config.h; \
 	fi
 	@$(MKCONFIG) -a ads5121 ppc mpc512x ads5121
 
@@ -2919,43 +2920,46 @@ atngw100_config	:	unconfig
 ## sh3 (Renesas SuperH)
 #########################################################################
 mpr2_config: unconfig
-	@ >include/config.h
-	@echo "#define CONFIG_MPR2 1" >> include/config.h
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_MPR2 1" > $(obj)include/config.h
 	@$(MKCONFIG) -a $(@:_config=) sh sh3 mpr2
 
 ms7720se_config: unconfig
-	@echo "#define CONFIG_MS7720SE 1" > include/config.h
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_MS7720SE 1" > $(obj)include/config.h
 	@$(MKCONFIG) -a $(@:_config=) sh sh3 ms7720se
 
 #########################################################################
 ## sh4 (Renesas SuperH)
 #########################################################################
 ms7750se_config: unconfig
+	@mkdir -p $(obj)include
 	@echo "#define CONFIG_MS7750SE 1" > $(obj)include/config.h
 	@$(MKCONFIG) -a $(@:_config=) sh sh4 ms7750se
 
 ms7722se_config :	unconfig
+	@mkdir -p $(obj)include
 	@echo "#define CONFIG_MS7722SE 1" > $(obj)include/config.h
 	@$(MKCONFIG) -a $(@:_config=) sh sh4 ms7722se
 
 MigoR_config :       unconfig
-	@ >include/config.h
-	@echo "#define CONFIG_MIGO_R 1" >> include/config.h
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_MIGO_R 1" > $(obj)include/config.h
 	@./mkconfig -a $(@:_config=) sh sh4 MigoR
 
 r7780mp_config: unconfig
-	@ >include/config.h
-	@echo "#define CONFIG_R7780MP 1" >> include/config.h
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_R7780MP 1" > $(obj)include/config.h
 	@./mkconfig -a $(@:_config=) sh sh4 r7780mp
 
 r2dplus_config  :   unconfig
-	@ >include/config.h
-	@echo "#define CONFIG_R2DPLUS 1" >> include/config.h
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_R2DPLUS 1" > $(obj)include/config.h
 	@./mkconfig -a $(@:_config=) sh sh4 r2dplus
 
 sh7763rdp_config  :   unconfig
-	@ >include/config.h
-	@echo "#define CONFIG_SH7763RDP 1" >> include/config.h
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_SH7763RDP 1" > $(obj)include/config.h
 	@./mkconfig -a $(@:_config=) sh sh4 sh7763rdp
 
 #========================================================================

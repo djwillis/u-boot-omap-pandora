@@ -36,6 +36,10 @@
 #include <lmb.h>
 #include <asm/byteorder.h>
 
+#if (CONFIG_COMMANDS & CFG_CMD_USB)
+#include <usb.h>
+#endif
+
 #ifdef CFG_HUSH_PARSER
 #include <hush.h>
 #endif
@@ -212,6 +216,20 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	 * recover from any failures any more...
 	 */
 	iflag = disable_interrupts();
+
+#if (CONFIG_COMMANDS & CFG_CMD_USB)
+       /*
+        * turn off USB to prevent the host controller from writing to the
+        * SDRAM while Linux is booting. This could happen (at least for OHCI
+        * controller), because the HCCA (Host Controller Communication Area)
+        * lies within the SDRAM and the host controller writes continously to
+        * this area (as busmaster!). The HccaFrameNumber is for example
+        * updated every 1 ms within the HCCA structure in SDRAM! For more
+        * details see the OpenHCI specification.
+        */
+	usb_stop();
+#endif
+
 
 #ifdef CONFIG_AMIGAONEG3SE
 	/*
@@ -613,7 +631,7 @@ static void *boot_get_kernel (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]
 		return NULL;
 	}
 
-	debug ("   kernel data at 0x%08lx, len = 0x%08lx (%d)\n",
+	debug ("   kernel data at 0x%08lx, len = 0x%08lx (%ld)\n",
 			*os_data, *os_len, *os_len);
 
 	return (void *)img_addr;
