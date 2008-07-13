@@ -37,6 +37,12 @@ int find_dev_and_part(const char *id, struct mtd_device **dev,
 		u8 *part_num, struct part_info **part);
 #endif
 
+#if defined(CONFIG_OMAP) && (defined(CONFIG_OMAP3_BEAGLE))
+extern void omap_nand_switch_ecc(nand_info_t *nand, int hardware);
+#else
+#define omap_nand_switch_ecc(x, y) do {} while(0)
+#endif
+
 static int nand_dump_oob(nand_info_t *nand, ulong off)
 {
 	return 0;
@@ -222,7 +228,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 	    strncmp(cmd, "dump", 4) != 0 &&
 	    strncmp(cmd, "read", 4) != 0 && strncmp(cmd, "write", 5) != 0 &&
 	    strcmp(cmd, "scrub") != 0 && strcmp(cmd, "markbad") != 0 &&
-	    strcmp(cmd, "biterr") != 0 &&
+	    strcmp(cmd, "biterr") != 0 && strncmp(cmd, "ecc", 3) != 0 &&
 	    strcmp(cmd, "lock") != 0 && strcmp(cmd, "unlock") != 0 )
 		goto usage;
 
@@ -305,6 +311,19 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 
 		return ret == 0 ? 1 : 0;
 
+	}
+
+	if (strncmp(cmd, "ecc", 3) == 0) {
+		if (argc < 2)
+			goto usage;
+		if (strncmp(argv[2], "hw", 2) == 0)
+			omap_nand_switch_ecc(nand, 1);
+		else if (strncmp(argv[2], "sw", 2) == 0)
+			omap_nand_switch_ecc(nand, 0);
+		else
+			goto usage;
+
+		return 0;
 	}
 
 	/* read write */
@@ -472,6 +491,7 @@ U_BOOT_CMD(nand, 5, 1, do_nand,
 	"nand scrub - really clean NAND erasing bad blocks (UNSAFE)\n"
 	"nand markbad off - mark bad block at offset (UNSAFE)\n"
 	"nand biterr off - make a bit error at offset (UNSAFE)\n"
+	"nand ecc [hw/sw] - switch the ecc calculation algorithm \n"
 	"nand lock [tight] [status] - bring nand to lock state or display locked pages\n"
 	"nand unlock [offset] [size] - unlock section\n");
 
