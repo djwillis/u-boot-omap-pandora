@@ -2585,6 +2585,10 @@ SMN42_config	:	unconfig
 omap3530beagle_config :    unconfig
 	@./mkconfig $(@:_config=) arm omap3 omap3530beagle
 
+overo_config	:	unconfig
+	@$(MKCONFIG) $(@:_config=) arm omap3 overo
+
+
 #########################################################################
 ## XScale Systems
 #########################################################################
