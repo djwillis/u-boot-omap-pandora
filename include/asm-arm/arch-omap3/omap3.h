@@ -128,4 +128,8 @@
 #define SDP_3430_V1		0x1
 #define SDP_3430_V2		0x2
 
+/* EVM definitions */
+#define OMAP3EVM_V1		0x1
+#define OMAP3EVM_V2		0x2
+
 #endif
