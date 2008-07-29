@@ -48,23 +48,23 @@
 #include <asm/arch/omap3.h>
 
 /* Clock Defines */
-#define V_OSCK                   26000000	/* Clock output from T2 */
-#define V_SCLK                   (V_OSCK >> 1)
+#define V_OSCK			26000000	/* Clock output from T2 */
+#define V_SCLK			(V_OSCK >> 1)
 
 #undef CONFIG_USE_IRQ		/* no support for IRQs */
 #define CONFIG_MISC_INIT_R
 
-#define CONFIG_CMDLINE_TAG       1	/* enable passing of ATAGs */
-#define CONFIG_SETUP_MEMORY_TAGS 1
-#define CONFIG_INITRD_TAG        1
-#define CONFIG_REVISION_TAG      1
+#define CONFIG_CMDLINE_TAG		1	/* enable passing of ATAGs */
+#define CONFIG_SETUP_MEMORY_TAGS	1
+#define CONFIG_INITRD_TAG		1
+#define CONFIG_REVISION_TAG		1
 
 /*
  * Size of malloc() pool
  */
-#define CFG_ENV_SIZE             SZ_128K /* Total Size Environment Sector */
-#define CFG_MALLOC_LEN           (CFG_ENV_SIZE + SZ_128K)
-#define CFG_GBL_DATA_SIZE        128	 /* bytes reserved for initial data */
+#define CFG_ENV_SIZE		SZ_128K	/* Total Size Environment Sector */
+#define CFG_MALLOC_LEN		(CFG_ENV_SIZE + SZ_128K)
+#define CFG_GBL_DATA_SIZE	128	/* bytes reserved for initial data */
 
 /*
  * Hardware drivers
@@ -73,24 +73,24 @@
 /*
  * NS16550 Configuration
  */
-#define V_NS16550_CLK            (48000000)	/* 48MHz (APLL96/2) */
+#define V_NS16550_CLK		(48000000)	/* 48MHz (APLL96/2) */
 
 #define CFG_NS16550
 #define CFG_NS16550_SERIAL
-#define CFG_NS16550_REG_SIZE     (-4)
-#define CFG_NS16550_CLK          V_NS16550_CLK
+#define CFG_NS16550_REG_SIZE	(-4)
+#define CFG_NS16550_CLK		V_NS16550_CLK
 
 /*
  * select serial console configuration
  */
-#define CONFIG_CONS_INDEX        1
-#define CFG_NS16550_COM1         OMAP34XX_UART1
-#define CONFIG_SERIAL1           1	/* UART1 on OMAP3 EVM */
+#define CONFIG_CONS_INDEX	1
+#define CFG_NS16550_COM1	OMAP34XX_UART1
+#define CONFIG_SERIAL1		1	/* UART1 on OMAP3 EVM */
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-#define CONFIG_BAUDRATE          115200
-#define CFG_BAUDRATE_TABLE       {4800, 9600, 19200, 38400, 57600, 115200}
+#define CONFIG_BAUDRATE		115200
+#define CFG_BAUDRATE_TABLE	{4800, 9600, 19200, 38400, 57600, 115200}
 #define CONFIG_MMC		1
 #define CFG_MMC_BASE		0xF0000000
 #define CONFIG_DOS_PARTITION	1
@@ -101,8 +101,9 @@
 #define CONFIG_CMD_FAT		/* FAT support			*/
 #define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
 
-#define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+#define CONFIG_CMD_I2C          /* I2C serial bus support       */
 #define CONFIG_CMD_MMC		/* MMC support			*/
+#define CONFIG_CMD_NAND		/* NAND support		        */
 #define CONFIG_CMD_ONENAND	/* ONENAND support		*/
 
 #define CONFIG_CMD_AUTOSCRIPT	/* autoscript support		*/
@@ -116,13 +117,18 @@
 #define CONFIG_CMD_MEMORY	/* md mm nm mw cp cmp crc base loop mtest */
 #define CONFIG_CMD_MISC		/* misc functions like sleep etc*/
 #define CONFIG_CMD_RUN		/* run command in env variable	*/
+#define CONFIG_CMD_NET		/* bootp, tftpboot, rarpboot    */
+#define CONFIG_CMD_DHCP
+#define CONFIG_CMD_PING
+#define CONFIG_CMD_NFS          /* NFS support                  */
+
 
 #define CFG_NO_FLASH
-#define CFG_I2C_SPEED            100
-#define CFG_I2C_SLAVE            1
-#define CFG_I2C_BUS              0
-#define CFG_I2C_BUS_SELECT       1
-#define CONFIG_DRIVER_OMAP34XX_I2C 1
+#define CFG_I2C_SPEED			100
+#define CFG_I2C_SLAVE			1
+#define CFG_I2C_BUS			0
+#define CFG_I2C_BUS_SELECT		1
+#define CONFIG_DRIVER_OMAP34XX_I2C	1
 
 /*
  *  Board NAND Info.
@@ -131,18 +137,18 @@
 #define CFG_NAND_BASE NAND_BASE	/* physical address to access nand at CS0 */
 #define CFG_NAND_WIDTH_16
 
-#define CFG_MAX_NAND_DEVICE      1	/* Max number of NAND devices */
-#define SECTORSIZE               512
+#define CFG_MAX_NAND_DEVICE	1	/* Max number of NAND devices */
+#define SECTORSIZE		512
 
 #define NAND_ALLOW_ERASE_ALL
-#define ADDR_COLUMN              1
-#define ADDR_PAGE                2
-#define ADDR_COLUMN_PAGE         3
+#define ADDR_COLUMN		1
+#define ADDR_PAGE		2
+#define ADDR_COLUMN_PAGE	3
 
-#define NAND_ChipID_UNKNOWN      0x00
-#define NAND_MAX_FLOORS          1
-#define NAND_MAX_CHIPS           1
-#define NAND_NO_RB               1
+#define NAND_ChipID_UNKNOWN	0x00
+#define NAND_MAX_FLOORS		1
+#define NAND_MAX_CHIPS		1
+#define NAND_NO_RB		1
 #define CFG_NAND_WP
 
 #define CONFIG_JFFS2_NAND
@@ -150,50 +156,50 @@
 #define CONFIG_JFFS2_DEV		"nand0"
 /* start of jffs2 partition */
 #define CONFIG_JFFS2_PART_OFFSET	0x680000
-#define CONFIG_JFFS2_PART_SIZE 	0xf980000	/* size of jffs2 partition */
+#define CONFIG_JFFS2_PART_SIZE		0xf980000	/* sz of jffs2 part */
 
 /* Environment information */
-#define CONFIG_BOOTDELAY         10
+#define CONFIG_BOOTDELAY	10
 
 #define CONFIG_BOOTCOMMAND	"onenand read 80200000 280000 400000 ; \
 				bootm 80200000"
 
-#define CONFIG_BOOTARGS "setenv bootargs console=ttyS2,115200n8 noinitrd \
-			root=/dev/mtdblock4 rw rootfstype=jffs2"
+#define CONFIG_BOOTARGS	"setenv bootargs console=ttyS2,115200n8 noinitrd \
+				root=/dev/mtdblock4 rw rootfstype=jffs2"
 
-#define CONFIG_NETMASK           255.255.254.0
-#define CONFIG_IPADDR            128.247.77.90
-#define CONFIG_SERVERIP          128.247.77.158
-#define CONFIG_BOOTFILE          "uImage"
-#define CONFIG_AUTO_COMPLETE     1
+#define CONFIG_NETMASK		255.255.254.0
+#define CONFIG_IPADDR		128.247.77.90
+#define CONFIG_SERVERIP		128.247.77.158
+#define CONFIG_BOOTFILE		"uImage"
+#define CONFIG_AUTO_COMPLETE	1
 /*
  * Miscellaneous configurable options
  */
-#define V_PROMPT                 "OMAP3_EVM # "
+#define V_PROMPT		"OMAP3_EVM # "
 
 #define CFG_LONGHELP		/* undef to save memory */
-#define CFG_PROMPT               V_PROMPT
-#define CFG_CBSIZE               256	/* Console I/O Buffer Size */
+#define CFG_PROMPT		V_PROMPT
+#define CFG_CBSIZE		256	/* Console I/O Buffer Size */
 /* Print Buffer Size */
-#define CFG_PBSIZE               (CFG_CBSIZE+sizeof(CFG_PROMPT)+16)
-#define CFG_MAXARGS              16	/* max number of command args */
-#define CFG_BARGSIZE             CFG_CBSIZE	/* Boot Argument Buffer Size */
+#define CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)
+#define CFG_MAXARGS		16	/* max number of command args */
+#define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
 
-#define CFG_MEMTEST_START        (OMAP34XX_SDRC_CS0)	/* memtest works on */
-#define CFG_MEMTEST_END          (OMAP34XX_SDRC_CS0+0x01F00000) /* 31MB */
+#define CFG_MEMTEST_START	(OMAP34XX_SDRC_CS0)	/* memtest works on */
+#define CFG_MEMTEST_END		(OMAP34XX_SDRC_CS0+0x01F00000) /* 31MB */
 
 #undef	CFG_CLKS_IN_HZ		/* everything, incl board info, in Hz */
 
-#define CFG_LOAD_ADDR            (OMAP34XX_SDRC_CS0) /* default load address */
+#define CFG_LOAD_ADDR		(OMAP34XX_SDRC_CS0) /* default load address */
 
 /* 2430 has 12 GP timers, they can be driven by the SysClk (12/13/19.2) or by
  * 32KHz clk, or from external sig. This rate is divided by a local divisor.
  */
-#define V_PVT                    7
+#define V_PVT			7
 
-#define CFG_TIMERBASE            OMAP34XX_GPT2
-#define CFG_PVT                  V_PVT	/* 2^(pvt+1) */
-#define CFG_HZ                   ((V_SCLK)/(2 << CFG_PVT))
+#define CFG_TIMERBASE		OMAP34XX_GPT2
+#define CFG_PVT			V_PVT	/* 2^(pvt+1) */
+#define CFG_HZ			((V_SCLK)/(2 << CFG_PVT))
 
 /*-----------------------------------------------------------------------
  * Stack sizes
@@ -295,5 +301,28 @@ extern unsigned int boot_flash_type;
 #define NAND_DISABLE_CE(nand)
 #define NAND_ENABLE_CE(nand)
 #define NAND_WAIT_READY(nand)	udelay(10)
+
+
+/*----------------------------------------------------------------------------
+ *  SMSC9115 Ethernet from SMSC9118 family
+ *  ----------------------------------------------------------------------------
+ */
+#if defined(CONFIG_CMD_NET)
+
+#define CONFIG_DRIVER_SMC911X
+#define CONFIG_DRIVER_SMC911X_32_BIT
+#define CONFIG_DRIVER_SMC911X_BASE	(0x2C000000)
+
+#endif  /* (CONFIG_CMD_NET) */
+
+/*
+ *  BOOTP fields
+ */
+
+
+#define CONFIG_BOOTP_SUBNETMASK		0x00000001
+#define CONFIG_BOOTP_GATEWAY		0x00000002
+#define CONFIG_BOOTP_HOSTNAME		0x00000004
+#define CONFIG_BOOTP_BOOTPATH		0x00000010
 
 #endif				/* __CONFIG_H */

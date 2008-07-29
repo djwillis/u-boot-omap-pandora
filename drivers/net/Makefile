@@ -67,6 +67,7 @@ COBJS-$(CONFIG_VSC7385_ENET) += vsc7385.o
 COBJS-$(CONFIG_XILINX_EMAC) += xilinx_emac.o
 COBJS-$(CONFIG_XILINX_EMACLITE) += xilinx_emaclite.o
 COBJS-$(CONFIG_SH_ETHER) += sh_eth.o
+COBJS-$(CONFIG_DRIVER_SMC911X) += smc911x.o
 
 COBJS	:= $(COBJS-y)
 SRCS	:= $(COBJS:.o=.c)
