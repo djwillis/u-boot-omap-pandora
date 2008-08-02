@@ -351,7 +351,7 @@ int dram_init(void)
  *****************************************************************************/
 void set_muxconf_regs(void)
 {
-	MUX_DEFAULT_ES2();
+	MUX_DEFAULT_OVERO();
 }
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND) && defined(CFG_NAND_LEGACY)
