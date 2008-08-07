@@ -248,28 +248,7 @@ int misc_init_r(void)
 #ifdef CONFIG_DRIVER_OMAP34XX_I2C
 	i2c_init(CFG_I2C_SPEED, CFG_I2C_SLAVE);
 #endif
-	byte = 0x20;
-	i2c_write(0x4B, 0x7A, 1, &byte, 1);
-	byte = 0x03;
-	i2c_write(0x4B, 0x7D, 1, &byte, 1);
-	byte = 0xE0;
-	i2c_write(0x4B, 0x8E, 1, &byte, 1);
-	byte = 0x05;
-	i2c_write(0x4B, 0x91, 1, &byte, 1);
-	byte = 0x20;
-	i2c_write(0x4B, 0x96, 1, &byte, 1);
-	byte = 0x03;
-	i2c_write(0x4B, 0x99, 1, &byte, 1);
-	byte = 0x33;
-	i2c_write(0x4A, 0xEE, 1, &byte, 1);
 
-	*((uint *) 0x49058034) = 0xFFFFFAF9;
-	*((uint *) 0x49056034) = 0x0F9F0FFF;
-	*((uint *) 0x49058094) = 0x00000506;
-	*((uint *) 0x49056094) = 0xF060F000;
-
-	/* set clksel_tv and clksel_dss1 to DPLL4 clock divided by 1 */
-	*((uint *) 0x48004E40) = 0x00001001;
 #if defined(CONFIG_CMD_NET)
 	setup_net_chip();
 #endif
