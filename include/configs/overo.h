@@ -109,7 +109,7 @@
 #define CONFIG_CMD_RUN		/* run command in env variable	*/
 
 #define CFG_NO_FLASH
-#define CFG_I2C_SPEED		100
+#define CFG_I2C_SPEED		100000
 #define CFG_I2C_SLAVE		1
 #define CFG_I2C_BUS		0
 #define CFG_I2C_BUS_SELECT	1
