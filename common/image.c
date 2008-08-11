@@ -204,7 +204,6 @@ void memmove_wd (void *to, void *from, size_t len, ulong chunksz)
 	memmove (to, from, len);
 #endif	/* CONFIG_HW_WATCHDOG || CONFIG_WATCHDOG */
 }
-#endif /* USE_HOSTCC */
 
 /**
  * image_multi_count - get component (sub-image) count
