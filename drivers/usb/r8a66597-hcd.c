@@ -19,12 +19,12 @@
  */
 
 #include <common.h>
+
+#if defined(CONFIG_USB_R8A66597_HCD)
 #include <usb.h>
 #include <asm/io.h>
 
 #include "r8a66597.h"
-
-#if defined(CONFIG_USB_R8A66597_HCD)
 
 #ifdef R8A66597_DEBUG
 #define R8A66597_DPRINT		printf
