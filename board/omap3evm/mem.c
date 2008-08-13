@@ -246,37 +246,51 @@ void gpmc_init(void)
 	__raw_writel(0, GPMC_CONFIG7 + GPMC_CONFIG_CS0);
 	sdelay(1000);
 
-#if defined(CONFIG_CMD_NAND)
-	/* CS 0 */
+#if defined(CONFIG_CMD_NAND)    /* CS 0 */
 	gpmc_config = gpmc_m_nand;
+#if defined(CFG_ENV_IS_IN_NAND)
 	gpmc_base = GPMC_CONFIG_CS0 + (0 * GPMC_CONFIG_WIDTH);
+#else
+	gpmc_base = GPMC_CONFIG_CS0 + (1 * GPMC_CONFIG_WIDTH);
+#endif
 	base = PISMO1_NAND_BASE;
 	size = PISMO1_NAND_SIZE;
 	enable_gpmc_config(gpmc_config, gpmc_base, base, size);
-
-	f_off = SMNAND_ENV_OFFSET;
-	f_sec = SZ_128K;
 	is_nand = 1;
 	nand_cs_base = gpmc_base;
-#endif
-
-#if defined(CONFIG_CMD_ONENAND)
-	gpmc_config = gpmc_onenand;
-	gpmc_base = GPMC_CONFIG_CS0 + (0 * GPMC_CONFIG_WIDTH);
-	base = PISMO1_ONEN_BASE;
-	size = PISMO1_ONEN_SIZE;
-	enable_gpmc_config(gpmc_config, gpmc_base, base, size);
-
-	f_off = (ONENAND_MAP + ONENAND_ENV_OFFSET);
+#if defined(CFG_ENV_IS_IN_NAND)
+	f_off = SMNAND_ENV_OFFSET;
 	f_sec = SZ_128K;
-	is_onenand = 1;
-	onenand_cs_base = gpmc_base;
-#endif
 	/* env setup */
 	boot_flash_base = base;
 	boot_flash_off = f_off;
 	boot_flash_sec = f_sec;
 	boot_flash_env_addr = f_off;
+#endif
+#endif
+
+#if defined(CONFIG_CMD_ONENAND)
+	gpmc_config = gpmc_onenand;
+#if defined(CFG_ENV_IS_IN_ONENAND)
+	gpmc_base = GPMC_CONFIG_CS0 + (0 * GPMC_CONFIG_WIDTH);
+#else
+	gpmc_base = GPMC_CONFIG_CS0 + (1 * GPMC_CONFIG_WIDTH);
+#endif
+	base = PISMO1_ONEN_BASE;
+	size = PISMO1_ONEN_SIZE;
+	enable_gpmc_config(gpmc_config, gpmc_base, base, size);
+	is_onenand = 1;
+	onenand_cs_base = gpmc_base;
+#if defined(CFG_ENV_IS_IN_ONENAND)
+	f_off = ONENAND_ENV_OFFSET;
+	f_sec = SZ_128K;
+	/* env setup */
+	boot_flash_base = base;
+	boot_flash_off = f_off;
+	boot_flash_sec = f_sec;
+	boot_flash_env_addr = f_off;
+#endif
+#endif
 
 #ifdef ENV_IS_VARIABLE
 	boot_env_get_char_spec = env_get_char_spec;
@@ -284,5 +298,4 @@ void gpmc_init(void)
 	boot_saveenv = saveenv;
 	boot_env_relocate_spec = env_relocate_spec;
 #endif
-
 }
