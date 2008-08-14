@@ -12,8 +12,6 @@
 #include <common.h>
 #include <command.h>
 
-#ifdef CONFIG_CMD_ONENAND
-
 #include <linux/mtd/compat.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/onenand.h>
@@ -38,7 +36,7 @@ int do_onenand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 			onenand_init();
 			return 0;
 		}
-		onenand_print_device_info(onenand_chip.device_id, 1);
+		printf("%s\n", onenand_mtd.name);
 		return 0;
 
 	default:
@@ -159,5 +157,3 @@ U_BOOT_CMD(
 	"onenand block[.oob] addr block [page] [len] - "
 		"read data with (block [, page]) to addr"
 );
-
-#endif /* CONFIG_CMD_ONENAND */

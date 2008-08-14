@@ -25,12 +25,11 @@
 #include <common.h>
 #include <libfdt.h>
 #include <fdt_support.h>
-#include <ppc440.h>
+#include <ppc4xx.h>
 #include <asm/gpio.h>
 #include <asm/processor.h>
 #include <asm/io.h>
 #include <asm/bitops.h>
-#include <asm/ppc4xx-intvec.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -340,7 +339,7 @@ int checkboard(void)
  */
 void sequoia_pci_fixup_irq(struct pci_controller *hose, pci_dev_t dev)
 {
-	pci_hose_write_config_byte(hose, dev, PCI_INTERRUPT_LINE, VECNUM_EIR2);
+	pci_hose_write_config_byte(hose, dev, PCI_INTERRUPT_LINE, VECNUM_EIRQ2);
 }
 #endif
 
