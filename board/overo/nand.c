@@ -47,29 +47,30 @@ volatile unsigned long gpmc_cs_base_add;
  * @mtd:        MTD device structure
  * @ctrl:	Says whether Address or Command or Data is following.
  */
-static void omap_nand_hwcontrol(struct mtd_info *mtd,
-				int cmd, unsigned int ctrl)
+static void omap_nand_hwcontrol(struct mtd_info *mtd, int ctrl)
 {
 	register struct nand_chip *this = mtd->priv;
 
-	if (ctrl & NAND_CTRL_CHANGE) {
-		/* clear ALE & CLE */
+	/* Point the IO_ADDR to DATA and ADDRESS registers instead
+	   of chip address */
+	switch (ctrl) {
+	case NAND_CTL_SETCLE:
+		this->IO_ADDR_W = (void *) gpmc_cs_base_add + GPMC_NAND_CMD;
+		this->IO_ADDR_R = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
+		break;
+	case NAND_CTL_SETALE:
+		this->IO_ADDR_W = (void *) gpmc_cs_base_add + GPMC_NAND_ADR;
+		this->IO_ADDR_R = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
+		break;
+	case NAND_CTL_CLRCLE:
 		this->IO_ADDR_W = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
 		this->IO_ADDR_R = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
-
-		if (ctrl & NAND_CLE) {
-			this->IO_ADDR_W = (void *) gpmc_cs_base_add + GPMC_NAND_CMD;
-			this->IO_ADDR_R = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
-		}
-
-		if (ctrl & NAND_ALE) {
-			this->IO_ADDR_W = (void *) gpmc_cs_base_add + GPMC_NAND_ADR;
-			this->IO_ADDR_R = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
-		}
+		break;
+	case NAND_CTL_CLRALE:
+		this->IO_ADDR_W = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
+		this->IO_ADDR_R = (void *) gpmc_cs_base_add + GPMC_NAND_DAT;
+		break;
 	}
-
-	if (cmd != NAND_CMD_NONE)
-		writeb(cmd, this->IO_ADDR_W);
 }
 
 /*
@@ -301,20 +302,20 @@ void omap_nand_switch_ecc(struct mtd_info *mtd, int hardware)
 	struct nand_chip *nand = mtd->priv;
 
 	if (!hardware) {
-		nand->ecc.mode = NAND_ECC_SOFT;
+		nand->eccmode = NAND_ECC_SOFT;
 		nand->autooob = &sw_nand_oob_64;
-		nand->ecc.size = 256;	/* set default eccsize */
-		nand->ecc.bytes = 3;
-		nand->ecc.steps = 8;
+		nand->eccsize = 256;	/* set default eccsize */
+		nand->eccbytes = 3;
+		nand->eccsteps = 8;
 		nand->enable_hwecc = 0;
 		nand->calculate_ecc = nand_calculate_ecc;
 		nand->correct_data = nand_correct_data;
 	} else {
-		nand->ecc.mode = NAND_ECC_HW3_512;
+		nand->eccmode = NAND_ECC_HW3_512;
 		nand->autooob = &hw_nand_oob_64;
-		nand->ecc.size = 512;
-		nand->ecc.bytes = 3;
-		nand->ecc.steps = 4;
+		nand->eccsize = 512;
+		nand->eccbytes = 3;
+		nand->eccsteps = 4;
 		nand->enable_hwecc = omap_enable_hwecc;
 		nand->correct_data = omap_correct_data;
 		nand->calculate_ecc = omap_calculate_ecc;
@@ -322,7 +323,7 @@ void omap_nand_switch_ecc(struct mtd_info *mtd, int hardware)
 		omap_hwecc_init(nand);
 	}
 
-	mtd->eccsize = nand->ecc.size;
+	mtd->eccsize = nand->eccsize;
 	nand->oobdirty = 1;
 
 	if (nand->options & NAND_BUSWIDTH_16) {
@@ -386,12 +387,12 @@ int board_nand_init(struct nand_chip *nand)
 	nand->IO_ADDR_R = (int *) gpmc_cs_base_add + GPMC_NAND_DAT;
 	nand->IO_ADDR_W = (int *) gpmc_cs_base_add + GPMC_NAND_CMD;
 
-	nand->cmd_ctrl = omap_nand_hwcontrol;
+	nand->hwcontrol = omap_nand_hwcontrol;
 	nand->options = NAND_NO_PADDING | NAND_CACHEPRG | NAND_NO_AUTOINCR |
 			NAND_BUSWIDTH_16 | NAND_NO_AUTOINCR;
 	nand->read_buf = omap_nand_read_buf;
 	nand->write_buf = omap_nand_write_buf;
-	nand->ecc.mode = NAND_ECC_SOFT;
+	nand->eccmode = NAND_ECC_SOFT;
 	/* if RDY/BSY line is connected to OMAP then use the omap ready
 	 * function and the generic nand_wait function which reads the
 	 * status register after monitoring the RDY/BSY line. Otherwise
