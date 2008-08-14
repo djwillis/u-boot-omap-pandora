@@ -30,45 +30,48 @@
 int checkboard(void)
 {
 	puts("Board: ");
-	puts("Freescale MCF5253 EVBE\n");
+	puts("Freescale MCF5253 DEMO\n");
 	return 0;
 };
 
 phys_size_t initdram(int board_type)
 {
+	u32 dramsize = 0;
+
 	/*
 	 * Check to see if the SDRAM has already been initialized
 	 * by a run control tool
 	 */
 	if (!(mbar_readLong(MCFSIM_DCR) & 0x8000)) {
-		u32 RC, dramsize;
+		u32 RC, temp;
 
 		RC = (CFG_CLK / 1000000) >> 1;
 		RC = (RC * 15) >> 4;
 
 		/* Initialize DRAM Control Register: DCR */
 		mbar_writeShort(MCFSIM_DCR, (0x8400 | RC));
-		asm("nop");
+		__asm__("nop");
 
-		mbar_writeLong(MCFSIM_DACR0, 0x00002320);
-		asm("nop");
+		mbar_writeLong(MCFSIM_DACR0, 0x00003224);
+		__asm__("nop");
 
 		/* Initialize DMR0 */
-		dramsize = ((CFG_SDRAM_SIZE << 20) - 1) & 0xFFFC0000;
-		mbar_writeLong(MCFSIM_DMR0, dramsize | 1);
-		asm("nop");
+		dramsize = (CFG_SDRAM_SIZE << 20);
+		temp = (dramsize - 1) & 0xFFFC0000;
+		mbar_writeLong(MCFSIM_DMR0, temp | 1);
+		__asm__("nop");
 
-		mbar_writeLong(MCFSIM_DACR0, 0x00002328);
-		asm("nop");
+		mbar_writeLong(MCFSIM_DACR0, 0x0000322c);
+		__asm__("nop");
 
 		/* Write to this block to initiate precharge */
 		*(u32 *) (CFG_SDRAM_BASE) = 0xa5a5a5a5;
-		asm("nop");
+		__asm__("nop");
 
 		/* Set RE bit in DACR */
 		mbar_writeLong(MCFSIM_DACR0,
 			       mbar_readLong(MCFSIM_DACR0) | 0x8000);
-		asm("nop");
+		__asm__("nop");
 
 		/* Wait for at least 8 auto refresh cycles to occur */
 		udelay(500);
@@ -76,12 +79,12 @@ phys_size_t initdram(int board_type)
 		/* Finish the configuration by issuing the MRS */
 		mbar_writeLong(MCFSIM_DACR0,
 			       mbar_readLong(MCFSIM_DACR0) | 0x0040);
-		asm("nop");
+		__asm__("nop");
 
 		*(u32 *) (CFG_SDRAM_BASE + 0x800) = 0xa5a5a5a5;
 	}
 
-	return CFG_SDRAM_SIZE * 1024 * 1024;
+	return dramsize;
 }
 
 int testdram(void)

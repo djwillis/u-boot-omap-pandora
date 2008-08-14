@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2000-2003
+ * (C) Copyright 2000
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
@@ -33,11 +33,11 @@ SECTIONS
   .dynsym        : { *(.dynsym)		}
   .dynstr        : { *(.dynstr)		}
   .rel.text      : { *(.rel.text)		}
-  .rela.text     : { *(.rela.text)	}
+  .rela.text     : { *(.rela.text) 	}
   .rel.data      : { *(.rel.data)		}
-  .rela.data     : { *(.rela.data)	}
-  .rel.rodata    : { *(.rel.rodata)	}
-  .rela.rodata   : { *(.rela.rodata)	}
+  .rela.data     : { *(.rela.data) 	}
+  .rel.rodata    : { *(.rel.rodata) 	}
+  .rela.rodata   : { *(.rela.rodata) 	}
   .rel.got       : { *(.rel.got)		}
   .rela.got      : { *(.rela.got)		}
   .rel.ctors     : { *(.rel.ctors)	}
@@ -55,16 +55,21 @@ SECTIONS
     /* WARNING - the following is hand-optimized to fit within	*/
     /* the sector layout of our flash chips!	XXX FIXME XXX	*/
 
-    cpu/mcf52x2/start.o	(.text)
-    common/dlmalloc.o	(.text)
-    lib_generic/string.o	(.text)
-    lib_generic/vsprintf.o	(.text)
-    lib_generic/crc32.o	(.text)
-    lib_generic/zlib.o	(.text)
+    cpu/mcf5445x/start.o		(.text)
+/*    cpu/mcf5445x/cpu_init.o		(.text)
+    cpu/mcf5445x/cpu.o			(.text)
+    cpu/mcf5445x/dspi.o			(.text)
+    cpu/mcf5445x/interrupt.o		(.text)
+    cpu/mcf5445x/speed.o		(.text)
+    lib_m68k/board.o			(.text)
+    common/serial.o			(.text)
+    common/console.o			(.text)
+    lib_generic/display_options.o	(.text)
+    board/freescale/m54455evb/m54455evb.o	(.text)
 
-/*    . = env_offset; */
-    common/environment.o(.text)
-
+    . = DEFINED(env_offset) ? env_offset : .;
+    common/environment.o	(.text)
+*/
     *(.text)
     *(.fixup)
     *(.got1)
@@ -84,7 +89,8 @@ SECTIONS
   . = (. + 0x00FF) & 0xFFFFFF00;
   _erotext = .;
   PROVIDE (erotext = .);
-    .reloc   :
+
+  .reloc   :
   {
     __got_start = .;
     *(.got)
@@ -114,6 +120,7 @@ SECTIONS
   .u_boot_cmd : { *(.u_boot_cmd) }
   __u_boot_cmd_end = .;
 
+
   . = .;
   __start___ex_table = .;
   __ex_table : { *(__ex_table) }
@@ -127,7 +134,7 @@ SECTIONS
   __init_end = .;
 
   __bss_start = .;
-  .bss (NOLOAD)       :
+  .bss       :
   {
    _sbss = .;
    *(.sbss) *(.scommon)

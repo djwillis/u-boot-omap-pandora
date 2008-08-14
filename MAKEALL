@@ -694,6 +694,7 @@ LIST_coldfire="			\
 	M52277EVB		\
 	M5235EVB		\
 	M5249EVB		\
+	M5253DEMO		\
 	M5253EVBE		\
 	M5271EVB		\
 	M5272C3			\
@@ -701,6 +702,7 @@ LIST_coldfire="			\
 	M5282EVB		\
 	M5329AFEE		\
 	M5373EVB		\
+	M54451EVB		\
 	M54455EVB		\
 	M5475AFE		\
 	M5485AFE		\

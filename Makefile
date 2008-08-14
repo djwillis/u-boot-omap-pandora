@@ -1851,6 +1851,9 @@ M5235EVB_Flash32_config:	unconfig
 M5249EVB_config :		unconfig
 	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5249evb freescale
 
+M5253DEMO_config :		unconfig
+	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5253demo freescale
+
 M5253EVBE_config :		unconfig
 	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5253evbe freescale
 
@@ -1873,16 +1876,16 @@ idmr_config :			unconfig
 	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 idmr
 
 M5271EVB_config :		unconfig
-	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5271evb
+	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5271evb freescale
 
 M5272C3_config :		unconfig
-	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5272c3
+	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5272c3 freescale
 
 M5275EVB_config :		unconfig
 	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5275evb freescale
 
 M5282EVB_config :		unconfig
-	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5282evb
+	@$(MKCONFIG) $(@:_config=) m68k mcf52x2 m5282evb freescale
 
 M5329AFEE_config \
 M5329BFEE_config :	unconfig
@@ -1904,13 +1907,38 @@ M5373EVB_config :	unconfig
 	fi
 	@$(MKCONFIG) -a M5373EVB m68k mcf532x m5373evb freescale
 
+M54451EVB_config \
+M54451EVB_spansion_config \
+M54451EVB_stmicro_config :	unconfig
+	@case "$@" in \
+	M54451EVB_config)		FLASH=SPANSION;; \
+	M54451EVB_spansion_config)	FLASH=SPANSION;; \
+	M54451EVB_stmicro_config)	FLASH=STMICRO;; \
+	esac; \
+	if [ "$${FLASH}" = "SPANSION" ] ; then \
+		echo "#define CFG_SPANSION_BOOT"	>> $(obj)include/config.h ; \
+		echo "TEXT_BASE = 0x00000000" > $(obj)board/freescale/m54451evb/config.tmp ; \
+		cp $(obj)board/freescale/m54451evb/u-boot.spa $(obj)board/freescale/m54451evb/u-boot.lds ; \
+		$(XECHO) "... with SPANSION boot..." ; \
+	fi; \
+	if [ "$${FLASH}" = "STMICRO" ] ; then \
+		echo "#define CONFIG_CF_SBF"	>> $(obj)include/config.h ; \
+		echo "#define CFG_STMICRO_BOOT"	>> $(obj)include/config.h ; \
+		echo "TEXT_BASE = 0x47E00000" > $(obj)board/freescale/m54451evb/config.tmp ; \
+		cp $(obj)board/freescale/m54451evb/u-boot.stm $(obj)board/freescale/m54451evb/u-boot.lds ; \
+		$(XECHO) "... with ST Micro boot..." ; \
+	fi; \
+	echo "#define CFG_INPUT_CLKSRC 24000000" >> $(obj)include/config.h ;
+	@$(MKCONFIG) -a M54451EVB m68k mcf5445x m54451evb freescale
+
 M54455EVB_config \
 M54455EVB_atmel_config \
 M54455EVB_intel_config \
 M54455EVB_a33_config \
 M54455EVB_a66_config \
 M54455EVB_i33_config \
-M54455EVB_i66_config :	unconfig
+M54455EVB_i66_config \
+M54455EVB_stm33_config :	unconfig
 	@case "$@" in \
 	M54455EVB_config)		FLASH=ATMEL; FREQ=33333333;; \
 	M54455EVB_atmel_config)		FLASH=ATMEL; FREQ=33333333;; \
@@ -1919,17 +1947,26 @@ M54455EVB_i66_config :	unconfig
 	M54455EVB_a66_config)		FLASH=ATMEL; FREQ=66666666;; \
 	M54455EVB_i33_config)		FLASH=INTEL; FREQ=33333333;; \
 	M54455EVB_i66_config)		FLASH=INTEL; FREQ=66666666;; \
+	M54455EVB_stm33_config)		FLASH=STMICRO; FREQ=33333333;; \
 	esac; \
 	if [ "$${FLASH}" = "INTEL" ] ; then \
-		echo "#undef CFG_ATMEL_BOOT" >> $(obj)include/config.h ; \
+		echo "#define CFG_INTEL_BOOT" >> $(obj)include/config.h ; \
 		echo "TEXT_BASE = 0x00000000" > $(obj)board/freescale/m54455evb/config.tmp ; \
 		cp $(obj)board/freescale/m54455evb/u-boot.int $(obj)board/freescale/m54455evb/u-boot.lds ; \
 		$(XECHO) "... with INTEL boot..." ; \
-	else \
+	fi; \
+	if [ "$${FLASH}" = "ATMEL" ] ; then \
 		echo "#define CFG_ATMEL_BOOT"	>> $(obj)include/config.h ; \
 		echo "TEXT_BASE = 0x04000000" > $(obj)board/freescale/m54455evb/config.tmp ; \
 		cp $(obj)board/freescale/m54455evb/u-boot.atm $(obj)board/freescale/m54455evb/u-boot.lds ; \
 		$(XECHO) "... with ATMEL boot..." ; \
+	fi; \
+	if [ "$${FLASH}" = "STMICRO" ] ; then \
+		echo "#define CONFIG_CF_SBF"	>> $(obj)include/config.h ; \
+		echo "#define CFG_STMICRO_BOOT"	>> $(obj)include/config.h ; \
+		echo "TEXT_BASE = 0x4FE00000" > $(obj)board/freescale/m54455evb/config.tmp ; \
+		cp $(obj)board/freescale/m54455evb/u-boot.stm $(obj)board/freescale/m54455evb/u-boot.lds ; \
+		$(XECHO) "... with ST Micro boot..." ; \
 	fi; \
 	echo "#define CFG_INPUT_CLKSRC $${FREQ}" >> $(obj)include/config.h ; \
 	$(XECHO) "... with $${FREQ}Hz input clock"
