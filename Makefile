@@ -2641,14 +2641,14 @@ SMN42_config	:	unconfig
 #########################################################################
 ## ARM CORTEX Systems
 #########################################################################
-omap3530beagle_config :	unconfig
-	@$(MKCONFIG) $(@:_config=) arm omap3 omap3530beagle
+beagle_config :	unconfig
+	@$(MKCONFIG) $(@:_config=) arm omap3 beagle omap3
 
 overo_config	:	unconfig
-	@$(MKCONFIG) $(@:_config=) arm omap3 overo
+	@$(MKCONFIG) $(@:_config=) arm omap3 overo omap3
 
-omap3evm_config :	unconfig
-	@$(MKCONFIG) $(@:_config=) arm omap3 omap3evm
+evm_config :	unconfig
+	@$(MKCONFIG) $(@:_config=) arm omap3 evm omap3
 
 #########################################################################
 ## XScale Systems
