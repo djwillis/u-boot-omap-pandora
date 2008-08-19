@@ -2641,13 +2641,13 @@ SMN42_config	:	unconfig
 #########################################################################
 ## ARM CORTEX Systems
 #########################################################################
-beagle_config :	unconfig
+omap3_beagle_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm omap3 beagle omap3
 
-overo_config	:	unconfig
+omap3_overo_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm omap3 overo omap3
 
-evm_config :	unconfig
+omap3_evm_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm omap3 evm omap3
 
 #########################################################################
