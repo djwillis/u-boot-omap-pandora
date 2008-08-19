@@ -25,18 +25,19 @@ include $(TOPDIR)/config.mk
 
 LIB	= lib$(CPU).a
 
-START	= start.o
-OBJS	= interrupts.o cpu.o mmc.o mem.o
+START	:= start.o
+SOBJS	:= lowlevel_init.o
+OBJS	:= interrupts.o cpu.o mmc.o mem.o
 
 all:	.depend $(START) $(LIB)
 
-$(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+$(LIB):	$(OBJS) $(SOBJS)
+	$(AR) crv $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 
-.depend:	Makefile $(START:.o=.S) $(OBJS:.o=.c)
-		$(CC) -M $(CFLAGS) $(START:.o=.S) $(OBJS:.o=.c) > $@
+.depend:	Makefile $(START:.o=.S) $(OBJS:.o=.c) $(SOBJS:.o=.S)
+		$(CC) -M $(CFLAGS) $(START:.o=.S) $(OBJS:.o=.c) $(SOBJS:.0=.S) > $@
 
 sinclude .depend
 

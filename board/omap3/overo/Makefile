@@ -26,21 +26,20 @@ include $(TOPDIR)/config.mk
 LIB	= lib$(BOARD).a
 
 OBJS	:= overo.o clock.o syslib.o sys_info.o nand.o
-SOBJS	:= lowlevel_init.o
 
-$(LIB):	$(OBJS) $(SOBJS)
+$(LIB):	$(OBJS)
 	$(AR) crv $@ $^
 
 clean:
-	rm -f $(SOBJS) $(OBJS)
+	rm -f $(OBJS)
 
 distclean:	clean
 	rm -f $(LIB) core *.bak .depend
 
 #########################################################################
 
-.depend:	Makefile $(SOBJS:.o=.S) $(OBJS:.o=.c)
-		$(CC) -M $(CPPFLAGS) $(SOBJS:.o=.S) $(OBJS:.o=.c) > $@
+.depend:	Makefile $(OBJS:.o=.c)
+		$(CC) -M $(CPPFLAGS) $(OBJS:.o=.c) > $@
 
 -include .depend
 
