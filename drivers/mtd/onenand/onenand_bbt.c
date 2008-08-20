@@ -68,6 +68,7 @@ static int create_bbt(struct mtd_info *mtd, uint8_t * buf,
 	int startblock;
 	loff_t from;
 	size_t readlen, ooblen;
+	struct mtd_oob_ops oob_ops;
 
 	printk(KERN_INFO "Scanning device for bad blocks\n");
 
@@ -89,14 +90,17 @@ static int create_bbt(struct mtd_info *mtd, uint8_t * buf,
 		int ret;
 
 		for (j = 0; j < len; j++) {
-			size_t retlen;
-
 			/* No need to read pages fully,
 			 * just read required OOB bytes */
+			oob_ops.mode = MTD_OOB_AUTO;
+			oob_ops.len = readlen;
+			oob_ops.ooblen = readlen;
+			oob_ops.datbuf = NULL;
+			oob_ops.oobbuf = &buf[0];
+
 			ret = onenand_read_oob(mtd,
 					     from + j * mtd->writesize +
-					     bd->offs, readlen, &retlen,
-					     &buf[0]);
+					     bd->offs, &oob_ops);
 
 			if (ret && ret != -EAGAIN) {
 				printk("ret = %d\n", ret);

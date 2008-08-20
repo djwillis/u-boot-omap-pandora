@@ -86,7 +86,7 @@
 #define I2C_CON_BE      (1 << 14)  /* Big endian mode */
 #define I2C_CON_STB     (1 << 11)  /* Start byte mode (master mode only) */
 #define I2C_CON_MST     (1 << 10)  /* Master/slave mode */
-#define I2C_CON_TRX     (1 << 9)   /* Transmitter/receiver mode /*
+#define I2C_CON_TRX     (1 << 9)   /* Transmitter/receiver mode */
 				   /* (master mode only) */
 #define I2C_CON_XA      (1 << 8)   /* Expand address */
 #define I2C_CON_STP     (1 << 1)   /* Stop condition (master mode only) */
