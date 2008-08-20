@@ -31,6 +31,7 @@ include $(TOPDIR)/config.mk
 LIB	= $(obj)libhwmon.a
 
 COBJS-$(CONFIG_DTT_ADM1021) += adm1021.o
+COBJS-$(CONFIG_DTT_ADT7460) += adt7460.o
 COBJS-$(CONFIG_DTT_DS1621) += ds1621.o
 COBJS-$(CONFIG_DTT_DS1722) += ds1722.o
 COBJS-$(CONFIG_DTT_DS1775) += ds1775.o

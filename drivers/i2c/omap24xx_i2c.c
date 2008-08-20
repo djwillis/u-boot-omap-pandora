@@ -22,8 +22,6 @@
 
 #include <common.h>
 
-#if defined(CONFIG_DRIVER_OMAP24XX_I2C) || defined(CONFIG_DRIVER_OMAP34XX_I2C)
-
 #include <asm/arch/i2c.h>
 #include <asm/io.h>
 
@@ -350,5 +348,3 @@ static u16 wait_for_pin (void)
 }
 	return status;
 }
-
-#endif /* CONFIG_DRIVER_OMAP24XX_I2C */
