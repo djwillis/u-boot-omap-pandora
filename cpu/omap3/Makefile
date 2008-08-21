@@ -37,7 +37,7 @@ $(LIB):	$(OBJS) $(SOBJS)
 #########################################################################
 
 .depend:	Makefile $(START:.o=.S) $(OBJS:.o=.c) $(SOBJS:.o=.S)
-		$(CC) -M $(CFLAGS) $(START:.o=.S) $(OBJS:.o=.c) $(SOBJS:.0=.S) > $@
+		$(CC) -M $(CFLAGS) $(START:.o=.S) $(OBJS:.o=.c) $(SOBJS:.o=.S) > $@
 
 sinclude .depend
 
