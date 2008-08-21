@@ -27,7 +27,8 @@ LIB	= lib$(CPU).a
 
 START	:= start.o
 SOBJS	:= lowlevel_init.o
-OBJS	:= interrupts.o cpu.o mmc.o mem.o clock.o nand.o syslib.o sys_info.o
+OBJS	:= interrupts.o cpu.o mmc.o mem.o clock.o nand.o syslib.o sys_info.o \
+	   board.o
 
 all:	.depend $(START) $(LIB)
 
