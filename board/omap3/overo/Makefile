@@ -25,7 +25,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= lib$(BOARD).a
 
-OBJS	:= overo.o sys_info.o
+OBJS	:= overo.o
 
 $(LIB):	$(OBJS)
 	$(AR) crv $@ $^

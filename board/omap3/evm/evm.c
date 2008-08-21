@@ -49,6 +49,13 @@ extern struct nand_chip nand_dev_desc[CFG_MAX_NAND_DEVICE];
 #define UNLOCK_2 0x00000000
 #define UNLOCK_3 0x0000FFFF
 
+const omap3_sysinfo sysinfo = {
+	OMAP3EVM_V1,
+	OMAP3EVM_V2,
+	"35X-Family",
+	"OMAP3 EVM board",
+};
+
 static int setup_net_chip(void);
 
 /******************************************************************************

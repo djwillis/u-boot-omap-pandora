@@ -32,16 +32,17 @@
 #include <asm/arch/sys_proto.h>
 #include <i2c.h>
 
+extern omap3_sysinfo sysinfo;
+
 /**************************************************************************
  * get_gpmc0_type()
  ***************************************************************************/
 u32 get_gpmc0_type(void)
 {
 #if defined(CFG_ENV_IS_IN_ONENAND)
-	return 1;
+	return 1; /* OneNAND */
 #else
-	/* Default NAND */
-	return 2;
+	return 2; /* NAND */
 #endif
 }
 
@@ -119,9 +120,9 @@ u32 get_sdr_cs_size(u32 offset)
 u32 get_board_type(void)
 {
 	if (get_cpu_rev() == CPU_3430_ES2)
-		return OMAP3EVM_V2;
+		return sysinfo.board_type_v2;
 	else
-		return OMAP3EVM_V1;
+		return sysinfo.board_type_v1;
 }
 
 /******************************************************************
@@ -177,7 +178,7 @@ void display_board_info(u32 btype)
 {
 	char *bootmode[] = {
 		"NOR",
-		"ONND",
+		"ONENAND",
 		"NAND",
 		"P2a",
 		"NOR",
@@ -186,7 +187,6 @@ void display_board_info(u32 btype)
 		"P2b",
 	};
 	u32 brev = get_board_rev();
-	char cpu_3430s[] = "35X-Family";
 	char db_ver[] = "0.0";	/* board type */
 	char mem_sdr[] = "mSDR";	/* memory type */
 	char mem_ddr[] = "LPDDR";
@@ -201,7 +201,7 @@ void display_board_info(u32 btype)
 	char p_l3[] = "165";
 	char p_cpu[] = "2";
 
-	char *cpu_s, *db_s, *mem_s, *sec_s;
+	char *db_s, *mem_s, *sec_s;
 	u32 cpu, rev, sec;
 
 	rev = get_cpu_rev();
@@ -212,8 +212,6 @@ void display_board_info(u32 btype)
 		mem_s = mem_sdr;
 	else
 		mem_s = mem_ddr;
-
-	cpu_s = cpu_3430s;
 
 	db_s = db_ver;
 	db_s[0] += (brev >> 4) & 0xF;
@@ -236,9 +234,9 @@ void display_board_info(u32 btype)
 		sec_s = unk;
 	}
 
-	printf("OMAP%s-%s rev %d, CPU-OPP%s L3-%sMHz\n", cpu_s, sec_s, rev,
-	       p_cpu, p_l3);
-	printf("OMAP3 EVM Board + %s/%s\n",
+	printf("OMAP%s-%s rev %d, CPU-OPP%s L3-%sMHz\n", sysinfo.cpu_string,
+	       sec_s, rev, p_cpu, p_l3);
+	printf("%s + %s/%s\n", sysinfo.board_string,
 	       mem_s, bootmode[get_gpmc0_type()]);
 
 }

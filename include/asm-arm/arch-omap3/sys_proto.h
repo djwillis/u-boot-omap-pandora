@@ -21,6 +21,13 @@
 #ifndef _SYS_PROTO_H_
 #define _SYS_PROTO_H_
 
+typedef struct {
+	u32 board_type_v1;
+	u32 board_type_v2;
+	char *cpu_string;
+	char *board_string;
+} omap3_sysinfo;
+
 void prcm_init(void);
 void per_clocks_enable(void);
 

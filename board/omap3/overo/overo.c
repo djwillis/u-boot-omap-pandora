@@ -44,6 +44,13 @@
 #define UNLOCK_2 0x00000000
 #define UNLOCK_3 0x0000FFFF
 
+const omap3_sysinfo sysinfo = {
+	SDP_3430_V1,
+	SDP_3430_V2,
+	"3530",
+	"OMAP3 overo board",
+};
+
 /******************************************************************************
  * Routine: delay
  * Description: spinning delay to use before udelay works

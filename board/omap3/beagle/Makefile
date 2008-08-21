@@ -25,7 +25,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= lib$(BOARD).a
 
-OBJS	:= beagle.o sys_info.o
+OBJS	:= beagle.o
 
 $(LIB):	$(OBJS)
 	$(AR) crv $@ $^
