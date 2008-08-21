@@ -92,9 +92,6 @@
 #define CONFIG_CMD_ONENAND	/* ONENAND support		*/
 
 #define CONFIG_MTD_ONENAND_VERIFY_WRITE
-#define ONENAND_DEBUG
-#define CONFIG_MTD_DEBUG
-#define CONFIG_MTD_DEBUG_VERBOSE 2
 
 #define CONFIG_CMD_AUTOSCRIPT	/* autoscript support		*/
 #define CONFIG_CMD_BDI		/* bdinfo			*/
