@@ -543,6 +543,16 @@ __ide_inb(int dev, int port)
 unsigned char inline ide_inb(int dev, int port)
 			__attribute__((weak, alias("__ide_inb")));
 
+#ifdef CONFIG_TUNE_PIO
+int inline
+__ide_set_piomode(int pio_mode)
+{
+	return 0;
+}
+int inline ide_set_piomode(int pio_mode)
+			__attribute__((weak, alias("__ide_set_piomode")));
+#endif
+
 void ide_init (void)
 {
 
@@ -1053,6 +1063,10 @@ static void ide_ident (block_dev_desc_t *dev_desc)
 	int do_retry = 0;
 #endif
 
+#ifdef CONFIG_TUNE_PIO
+	int pio_mode;
+#endif
+
 #if 0
 	int mode, cycle_time;
 #endif
@@ -1167,6 +1181,38 @@ static void ide_ident (block_dev_desc_t *dev_desc)
 		dev_desc->removable = 1;
 	else
 		dev_desc->removable = 0;
+
+#ifdef CONFIG_TUNE_PIO
+	/* Mode 0 - 2 only, are directly determined by word 51. */
+	pio_mode = iop->tPIO;
+	if (pio_mode > 2) {
+		printf("WARNING: Invalid PIO (word 51 = %d).\n", pio_mode);
+		pio_mode = 0; /* Force it to dead slow, and hope for the best... */
+	}
+
+	/* Any CompactFlash Storage Card that supports PIO mode 3 or above
+	 * shall set bit 1 of word 53 to one and support the fields contained
+	 * in words 64 through 70.
+	 */
+	if (iop->field_valid & 0x02) {
+		/* Mode 3 and above are possible.  Check in order from slow
+		 * to fast, so we wind up with the highest mode allowed.
+		 */
+		if (iop->eide_pio_modes & 0x01)
+			pio_mode = 3;
+		if (iop->eide_pio_modes & 0x02)
+			pio_mode = 4;
+		if (ata_id_is_cfa((u16 *)iop)) {
+			if ((iop->cf_advanced_caps & 0x07) == 0x01)
+				pio_mode = 5;
+			if ((iop->cf_advanced_caps & 0x07) == 0x02)
+				pio_mode = 6;
+		}
+	}
+
+	/* System-specific, depends on bus speeds, etc. */
+	ide_set_piomode(pio_mode);
+#endif /* CONFIG_TUNE_PIO */
 
 #if 0
 	/*
@@ -1776,7 +1822,7 @@ unsigned char atapi_issue(int device,unsigned char* ccb,int ccblen, unsigned cha
 	c = atapi_wait_mask(device,ATAPI_TIME_OUT,mask,res);
 
 	if ((c & mask) != res) { /* DRQ must be 1, BSY 0 */
-		printf ("ATTAPI_ISSUE: Error (no IRQ) before sending ccb dev %d status 0x%02x\n",device,c);
+		printf ("ATAPI_ISSUE: Error (no IRQ) before sending ccb dev %d status 0x%02x\n",device,c);
 		err=0xFF;
 		goto AI_OUT;
 	}
@@ -1797,7 +1843,7 @@ unsigned char atapi_issue(int device,unsigned char* ccb,int ccblen, unsigned cha
 			err=(ide_inb(device,ATA_ERROR_REG))>>4;
 			debug ("atapi_issue 1 returned sense key %X status %02X\n",err,c);
 		} else {
-			printf ("ATTAPI_ISSUE: (no DRQ) after sending ccb (%x)  status 0x%02x\n", ccb[0],c);
+			printf ("ATAPI_ISSUE: (no DRQ) after sending ccb (%x)  status 0x%02x\n", ccb[0],c);
 			err=0xFF;
 		}
 		goto AI_OUT;

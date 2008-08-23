@@ -1,7 +1,6 @@
 /*
- * Copyright (C) 2006 Atmel Corporation
- *
- * Ethernet initialization for the AVR32 Network Gateway
+ * (C) Copyright 2002-2006
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -23,14 +22,15 @@
  */
 #include <common.h>
 
-#include <asm/arch/memory-map.h>
-
-extern int macb_eth_initialize(int id, void *regs, unsigned int phy_addr);
-
-#ifdef CONFIG_CMD_NET
-void atngw100_eth_initialize(bd_t *bi)
+char *strmhz (char *buf, long hz)
 {
-	macb_eth_initialize(0, (void *)MACB0_BASE, bi->bi_phy_id[0]);
-	macb_eth_initialize(1, (void *)MACB1_BASE, bi->bi_phy_id[1]);
+	long l, n;
+	long m;
+
+	n = hz / 1000000L;
+	l = sprintf (buf, "%ld", n);
+	m = (hz % 1000000L) / 1000L;
+	if (m != 0)
+		sprintf (buf + l, ".%03ld", m);
+	return (buf);
 }
-#endif

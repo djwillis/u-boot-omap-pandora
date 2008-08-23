@@ -2985,6 +2985,15 @@ atstk1004_config	:	unconfig
 atstk1006_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) avr32 at32ap atstk1000 atmel at32ap700x
 
+favr-32-ezkit_config	:	unconfig
+	@$(MKCONFIG) $(@:_config=) avr32 at32ap favr-32-ezkit earthlcd at32ap700x
+
+hammerhead_config	:	unconfig
+	@$(MKCONFIG) $(@:_config=) avr32 at32ap hammerhead miromico at32ap700x
+
+mimc200_config		:	unconfig
+	@$(MKCONFIG) $(@:_config=) avr32 at32ap mimc200 mimc at32ap700x
+
 #========================================================================
 # SH3 (SuperH)
 #========================================================================
@@ -3115,9 +3124,9 @@ clobber:	clean
 	@rm -f $(obj)tools/{fdt_wip.c,libfdt_internal.h}
 	@rm -f $(obj)cpu/mpc824x/bedbug_603e.c
 	@rm -f $(obj)include/asm/proc $(obj)include/asm/arch $(obj)include/asm
-	@[ ! -d $(obj)nand_spl ] || find $(obj)nand_spl -lname "*" -print | xargs rm -f
-	@[ ! -d $(obj)onenand_ipl ] || find $(obj)onenand_ipl -lname "*" -print | xargs rm -f
-	@[ ! -d $(obj)api_examples ] || find $(obj)api_examples -lname "*" -print | xargs rm -f
+	@[ ! -d $(obj)nand_spl ] || find $(obj)nand_spl -name "*" -type l -print | xargs rm -f
+	@[ ! -d $(obj)onenand_ipl ] || find $(obj)onenand_ipl -name "*" -type l -print | xargs rm -f
+	@[ ! -d $(obj)api_examples ] || find $(obj)api_examples -name "*" -type l -print | xargs rm -f
 
 ifeq ($(OBJTREE),$(SRCTREE))
 mrproper \
