@@ -66,58 +66,6 @@ static void onenand_writew(unsigned short value, void __iomem * addr)
 }
 
 /**
- * onenand_block_checkbad - [GENERIC] Check if a block is marked bad
- * @param mtd           MTD device structure
- * @param ofs           offset from device start
- * @param getchip       0, if the chip is already selected
- * @param allowbbt      1, if its allowed to access the bbt area
- *
- * Check, if the block is bad. Either by reading the bad block table or
- * calling of the scan function.
- */
-int onenand_block_checkbad(struct mtd_info *mtd, int ofs, int getchip,
-			int allowbbt)
-{
-	struct onenand_chip *this = mtd->priv;
-	struct bbm_info *bbm = this->bbm;
-
-	/* Return info from the table */
-	return bbm->isbad_bbt(mtd, ofs, allowbbt);
-}
-
-/**
- * onenand_default_block_markbad - [DEFAULT] mark a block bad
- * @param mtd           MTD device structure
- * @param ofs           offset from device start
- *
- * This is the default implementation, which can be overridden by
- * a hardware specific driver.
- */
-int onenand_default_block_markbad(struct mtd_info *mtd, loff_t ofs)
-{
-	struct onenand_chip *this = mtd->priv;
-	struct bbm_info *bbm = this->bbm;
-	u_char buf[2] = {0x0A, 0x0A};
-	int block;
-	struct mtd_oob_ops oob_ops;
-
-	/* Get block number */
-	block = ((int) ofs) >> bbm->bbt_erase_shift;
-	if (bbm->bbt)
-		bbm->bbt[block >> 2] |= 0x01 << ((block & 0x03) << 1);
-
-	/* We write two bytes, so we dont have to mess with 16 bit access */
-	ofs += mtd->oobsize + (bbm->badblockpos & ~0x01);
-	oob_ops.mode = MTD_OOB_AUTO;
-	oob_ops.len = 2;
-	oob_ops.ooblen = 2;
-	oob_ops.datbuf = NULL;
-	oob_ops.oobbuf = buf;
-	return onenand_write_oob(mtd, ofs, &oob_ops);
-}
-
-
-/**
  * onenand_block_address - [DEFAULT] Get block address
  * @param device	the device id
  * @param block		the block
@@ -564,7 +512,6 @@ static void onenand_invalidate_bufferram(struct mtd_info *mtd, loff_t addr,
 static void onenand_get_device(struct mtd_info *mtd, int new_state)
 {
 	/* Do nothing */
-	return;
 }
 
 /**
@@ -576,7 +523,6 @@ static void onenand_get_device(struct mtd_info *mtd, int new_state)
 static void onenand_release_device(struct mtd_info *mtd)
 {
 	/* Do nothing */
-	return;
 }
 
 /**
@@ -614,7 +560,6 @@ static int onenand_read_ecc(struct mtd_info *mtd, loff_t from, size_t len,
 
 	/* Grab the lock and see if the device is available */
 	onenand_get_device(mtd, FL_READING);
-	onenand_invalidate_bufferram(mtd, from, len);
 
 	while (read < len) {
 		thislen = min_t(int, mtd->writesize, len - read);
@@ -622,13 +567,6 @@ static int onenand_read_ecc(struct mtd_info *mtd, loff_t from, size_t len,
 		column = from & (mtd->writesize - 1);
 		if (column + thislen > mtd->writesize)
 			thislen = mtd->writesize - column;
-
-		if (onenand_block_isbad(mtd, from) > 0) {
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "onenand_read_ecc: \
-				detected bad block  @0x%x, skipping\n", from);
-			from += mtd->erasesize;
-			continue;
-		}
 
 		if (!onenand_check_bufferram(mtd, from)) {
 			this->command(mtd, ONENAND_CMD_READ, from,
@@ -639,26 +577,22 @@ static int onenand_read_ecc(struct mtd_info *mtd, loff_t from, size_t len,
 		}
 
 		this->read_bufferram(mtd, ONENAND_DATARAM, buf, column,
-					thislen);
+				     thislen);
 
 		read += thislen;
 		if (read == len)
 			break;
 
 		if (ret) {
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "onenand_read_ecc \
-					:read failed = %d\n", ret);
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "block @ 0x%x \
-				has gone bad\n", from);
-			onenand_block_markbad(mtd, from);
-			goto out;
+			MTDDEBUG (MTD_DEBUG_LEVEL0,
+				  "onenand_read_ecc: read failed = %d\n", ret);
+			break;
 		}
 
 		from += thislen;
 		buf += thislen;
 	}
 
-out:
 	/* Deselect and wake up anyone waiting on the device */
 	onenand_release_device(mtd);
 
@@ -691,23 +625,25 @@ int onenand_read(struct mtd_info *mtd, loff_t from, size_t len,
  * onenand_read_oob - [MTD Interface] OneNAND read out-of-band
  * @param mtd		MTD device structure
  * @param from		offset to read from
- * @param mtd_oob_ops	OOB operation parameters
+ * @param len		number of bytes to read
+ * @param retlen	pointer to variable to store the number of read bytes
+ * @param buf		the databuffer to put data
  *
  * OneNAND read out-of-band data from the spare area
  */
-int onenand_read_oob(struct mtd_info *mtd, loff_t from,
-			struct mtd_oob_ops *oob_ops)
+int onenand_read_oob(struct mtd_info *mtd, loff_t from, size_t len,
+		     size_t * retlen, u_char * buf)
 {
 	struct onenand_chip *this = mtd->priv;
 	int read = 0, thislen, column;
-	int ret = 0, len = oob_ops->ooblen;
+	int ret = 0;
 
 	MTDDEBUG (MTD_DEBUG_LEVEL3, "onenand_read_oob: "
 		  "from = 0x%08x, len = %i\n",
 		  (unsigned int)from, (int)len);
 
 	/* Initialize return length value */
-	oob_ops->oobretlen = 0;
+	*retlen = 0;
 
 	/* Do not allow reads past end of device */
 	if (unlikely((from + len) > mtd->size)) {
@@ -732,8 +668,8 @@ int onenand_read_oob(struct mtd_info *mtd, loff_t from,
 		ret = this->wait(mtd, FL_READING);
 		/* First copy data and check return value for ECC handling */
 
-		this->read_bufferram(mtd, ONENAND_SPARERAM, oob_ops->oobbuf,
-					column, thislen);
+		this->read_bufferram(mtd, ONENAND_SPARERAM, buf, column,
+				     thislen);
 
 		read += thislen;
 		if (read == len)
@@ -745,7 +681,7 @@ int onenand_read_oob(struct mtd_info *mtd, loff_t from,
 			break;
 		}
 
-		oob_ops->oobbuf += thislen;
+		buf += thislen;
 		/* Read more? */
 		if (read < len) {
 			/* Page size */
@@ -757,7 +693,7 @@ int onenand_read_oob(struct mtd_info *mtd, loff_t from,
 	/* Deselect and wake up anyone waiting on the device */
 	onenand_release_device(mtd);
 
-	oob_ops->oobretlen = read;
+	*retlen = read;
 	return ret;
 }
 
@@ -840,12 +776,6 @@ static int onenand_write_ecc(struct mtd_info *mtd, loff_t to, size_t len,
 		return -EINVAL;
 	}
 
-	if (unlikely(NOTALIGNED(len))) {
-		MTDDEBUG(MTD_DEBUG_LEVEL0, "onenand_write_ecc: \
-			Attempt to write not page aligned size\n");
-		return -EINVAL;
-	}
-
 	/* Grab the lock and see if the device is available */
 	onenand_get_device(mtd, FL_WRITING);
 
@@ -853,12 +783,6 @@ static int onenand_write_ecc(struct mtd_info *mtd, loff_t to, size_t len,
 	while (written < len) {
 		int thislen = min_t(int, mtd->writesize, len - written);
 
-		if (onenand_block_isbad(mtd, to) > 0) {
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "onenand_write_ecc: \
-				detected bad block  @0x%x, skipping\n", to);
-			to += mtd->erasesize;
-			continue;
-		}
 		this->command(mtd, ONENAND_CMD_BUFFERRAM, to, mtd->writesize);
 
 		this->write_bufferram(mtd, ONENAND_DATARAM, buf, 0, thislen);
@@ -871,11 +795,9 @@ static int onenand_write_ecc(struct mtd_info *mtd, loff_t to, size_t len,
 
 		ret = this->wait(mtd, FL_WRITING);
 		if (ret) {
-			MTDDEBUG(MTD_DEBUG_LEVEL0,
-				"onenand_write_ecc: write filaed %d\n", ret);
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "block @ 0x%x is bad\n", to);
-			onenand_block_markbad(mtd, to);
-			goto out;
+			MTDDEBUG (MTD_DEBUG_LEVEL0,
+				  "onenand_write_ecc: write filaed %d\n", ret);
+			break;
 		}
 
 		written += thislen;
@@ -883,11 +805,9 @@ static int onenand_write_ecc(struct mtd_info *mtd, loff_t to, size_t len,
 		/* Only check verify write turn on */
 		ret = onenand_verify_page(mtd, (u_char *) buf, to);
 		if (ret) {
-			MTDDEBUG(MTD_DEBUG_LEVEL0,
-				"onenand_write_ecc: verify failed %d\n", ret);
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "block @ 0x%x is bad\n", to);
-			onenand_block_markbad(mtd, to);
-			goto out;
+			MTDDEBUG (MTD_DEBUG_LEVEL0,
+				  "onenand_write_ecc: verify failed %d\n", ret);
+			break;
 		}
 
 		if (written == len)
@@ -897,7 +817,6 @@ static int onenand_write_ecc(struct mtd_info *mtd, loff_t to, size_t len,
 		buf += thislen;
 	}
 
-out:
 	/* Deselect and wake up anyone waiting on the device */
 	onenand_release_device(mtd);
 
@@ -933,20 +852,19 @@ int onenand_write(struct mtd_info *mtd, loff_t to, size_t len,
  *
  * OneNAND write out-of-band
  */
-int onenand_write_oob(struct mtd_info *mtd, loff_t to,
-			struct mtd_oob_ops *oob_ops)
+int onenand_write_oob(struct mtd_info *mtd, loff_t to, size_t len,
+		      size_t * retlen, const u_char * buf)
 {
 	struct onenand_chip *this = mtd->priv;
 	int column, status;
 	int written = 0;
-	size_t len = oob_ops->ooblen;
 
 	MTDDEBUG (MTD_DEBUG_LEVEL3, "onenand_write_oob: "
 		  "to = 0x%08x, len = %i\n",
 		  (unsigned int)to, (int)len);
 
 	/* Initialize retlen, in case of early exit */
-	oob_ops->oobretlen = 0;
+	*retlen = 0;
 
 	/* Do not allow writes past end of device */
 	if (unlikely((to + len) > mtd->size)) {
@@ -968,8 +886,8 @@ int onenand_write_oob(struct mtd_info *mtd, loff_t to,
 
 		this->write_bufferram(mtd, ONENAND_SPARERAM, ffchars, 0,
 				      mtd->oobsize);
-		this->write_bufferram(mtd, ONENAND_SPARERAM, oob_ops->oobbuf,
-					column, thislen);
+		this->write_bufferram(mtd, ONENAND_SPARERAM, buf, column,
+				      thislen);
 
 		this->command(mtd, ONENAND_CMD_PROGOOB, to, mtd->oobsize);
 
@@ -977,21 +895,20 @@ int onenand_write_oob(struct mtd_info *mtd, loff_t to,
 
 		status = this->wait(mtd, FL_WRITING);
 		if (status)
-			goto out;
+			break;
 
 		written += thislen;
 		if (written == len)
 			break;
 
 		to += thislen;
-		oob_ops->oobbuf += thislen;
+		buf += thislen;
 	}
 
-out:
 	/* Deselect and wake up anyone waiting on the device */
 	onenand_release_device(mtd);
 
-	oob_ops->retlen = written;
+	*retlen = written;
 
 	return 0;
 }
@@ -1072,31 +989,8 @@ int onenand_erase(struct mtd_info *mtd, struct erase_info *instr)
 		/* TODO Check badblock */
 
 		this->command(mtd, ONENAND_CMD_ERASE, addr, block_size);
-		if (instr->priv == ONENAND_SCRUB) {
-			if (onenand_block_isbad(mtd, addr) != 0x3) {
-			/* erase user marked bad blocks only */
-			this->command(mtd, ONENAND_CMD_ERASE, addr, block_size);
-			} else {
-			/* skip the factory marked bad blocks */
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "onenand_erase: \
-				not erasing factory bad block @0x%x\n", addr);
-			len -= block_size;
-			addr += block_size;
-			continue;
-			}
-		} else {
-			if (onenand_block_isbad(mtd, addr) == 0) {
-			/* block is not a known bad block. Try to erase it */
-			this->command(mtd, ONENAND_CMD_ERASE, addr, block_size);
-			} else {
-			/* skip the user and factory bad blocks */
-			MTDDEBUG(MTD_DEBUG_LEVEL0, "onenand_erase: \
-				not erasing bad block @0x%x\n", addr);
-			len -= block_size;
-			addr += block_size;
-			continue;
-			}
-		}
+
+		onenand_invalidate_bufferram(mtd, addr, block_size);
 
 		ret = this->wait(mtd, FL_ERASING);
 		/* Check, if it is write protected */
@@ -1442,9 +1336,6 @@ int onenand_scan(struct mtd_info *mtd, int maxchips)
 		this->read_bufferram = onenand_read_bufferram;
 	if (!this->write_bufferram)
 		this->write_bufferram = onenand_write_bufferram;
-
-	if (!this->block_markbad)
-		this->block_markbad = onenand_default_block_markbad;
 
 	if (onenand_probe(mtd))
 		return -ENXIO;
