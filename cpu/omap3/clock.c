@@ -211,25 +211,17 @@ void prcm_init(void)
 	/* Errata 1.50 Workaround for OMAP3 ES1.0 only */
 	/* If using default divisors, write default divisor + 1
 	   and then the actual divisor value */
-	/* Need to change it to silicon and revision check */
-	if (1) {
-		sr32(CM_CLKSEL1_EMU, 24, 5, PER_M6X2 + 1);	  /* set M6 */
-		sr32(CM_CLKSEL1_EMU, 24, 5, PER_M6X2);	          /* set M6 */
-		sr32(CM_CLKSEL_CAM, 0, 5, PER_M5X2 + 1);	  /* set M5 */
-		sr32(CM_CLKSEL_CAM, 0, 5, PER_M5X2);	          /* set M5 */
-		sr32(CM_CLKSEL_DSS, 0, 5, PER_M4X2 + 1);	  /* set M4 */
-		sr32(CM_CLKSEL_DSS, 0, 5, PER_M4X2);	          /* set M4 */
-		sr32(CM_CLKSEL_DSS, 8, 5, PER_M3X2 + 1);	  /* set M3 */
-		sr32(CM_CLKSEL_DSS, 8, 5, PER_M3X2);	          /* set M3 */
-		sr32(CM_CLKSEL3_PLL, 0, 5, dpll_param_p->m2 + 1); /* set M2 */
-		sr32(CM_CLKSEL3_PLL, 0, 5, dpll_param_p->m2);	  /* set M2 */
-	} else {
-		sr32(CM_CLKSEL1_EMU, 24, 5, PER_M6X2);	          /* set M6 */
-		sr32(CM_CLKSEL_CAM, 0, 5, PER_M5X2);	          /* set M5 */
-		sr32(CM_CLKSEL_DSS, 0, 5, PER_M4X2);	          /* set M4 */
-		sr32(CM_CLKSEL_DSS, 8, 5, PER_M3X2);	          /* set M3 */
-		sr32(CM_CLKSEL3_PLL, 0, 5, dpll_param_p->m2);	  /* set M2 */
-	}
+	sr32(CM_CLKSEL1_EMU, 24, 5, PER_M6X2 + 1);	  /* set M6 */
+	sr32(CM_CLKSEL1_EMU, 24, 5, PER_M6X2);	          /* set M6 */
+	sr32(CM_CLKSEL_CAM, 0, 5, PER_M5X2 + 1);	  /* set M5 */
+	sr32(CM_CLKSEL_CAM, 0, 5, PER_M5X2);	          /* set M5 */
+	sr32(CM_CLKSEL_DSS, 0, 5, PER_M4X2 + 1);	  /* set M4 */
+	sr32(CM_CLKSEL_DSS, 0, 5, PER_M4X2);	          /* set M4 */
+	sr32(CM_CLKSEL_DSS, 8, 5, PER_M3X2 + 1);	  /* set M3 */
+	sr32(CM_CLKSEL_DSS, 8, 5, PER_M3X2);	          /* set M3 */
+	sr32(CM_CLKSEL3_PLL, 0, 5, dpll_param_p->m2 + 1); /* set M2 */
+	sr32(CM_CLKSEL3_PLL, 0, 5, dpll_param_p->m2);	  /* set M2 */
+	/* Workaround end */
 	sr32(CM_CLKSEL2_PLL, 8, 11, dpll_param_p->m);	/* set m */
 	sr32(CM_CLKSEL2_PLL, 0, 7, dpll_param_p->n);	/* set n */
 	sr32(CM_CLKEN_PLL, 20, 4, dpll_param_p->fsel);	/* FREQSEL */
