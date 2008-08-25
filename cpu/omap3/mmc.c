@@ -52,7 +52,7 @@ static block_dev_desc_t mmc_blk_dev;
 
 block_dev_desc_t *mmc_get_dev(int dev)
 {
-	return ((block_dev_desc_t *) &mmc_blk_dev);
+	return (block_dev_desc_t *) &mmc_blk_dev;
 }
 
 void twl4030_mmc_config(void)
@@ -125,8 +125,7 @@ unsigned char mmc_clock_config(unsigned int iclk, unsigned short clk_div)
 	mmc_reg_out(OMAP_HSMMC_SYSCTL,
 		    ICE_MASK | CLKD_MASK, (val << CLKD_OFFSET) | ICE_OSCILLATE);
 
-	while ((OMAP_HSMMC_SYSCTL & ICS_MASK) == ICS_NOTREADY) {
-	}
+	while ((OMAP_HSMMC_SYSCTL & ICS_MASK) == ICS_NOTREADY) ;
 
 	OMAP_HSMMC_SYSCTL |= CEN_ENABLE;
 	return 1;
@@ -167,8 +166,7 @@ unsigned char mmc_send_cmd(unsigned int cmd, unsigned int arg,
 {
 	volatile unsigned int mmc_stat;
 
-	while ((OMAP_HSMMC_PSTATE & DATI_MASK) == DATI_CMDDIS) {
-	}
+	while ((OMAP_HSMMC_PSTATE & DATI_MASK) == DATI_CMDDIS) ;
 
 	OMAP_HSMMC_BLK = BLEN_512BYTESLEN | NBLK_STPCNT;
 	OMAP_HSMMC_STAT = 0xFFFFFFFF;

@@ -130,7 +130,7 @@ int cleanup_before_linux(void)
 	l2cache_enable();
 #endif
 
-	return (0);
+	return 0;
 }
 
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
@@ -139,7 +139,7 @@ int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	reset_cpu(0);
 
 	/* NOTREACHED */
-	return (0);
+	return 0;
 }
 
 void icache_enable(void)

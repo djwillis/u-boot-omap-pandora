@@ -186,7 +186,7 @@ int interrupt_init(void)
 
 	reset_timer_masked();	/* init the timestamp and lastinc value */
 
-	return (0);
+	return 0;
 }
 
 /*
