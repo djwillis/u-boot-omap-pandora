@@ -827,8 +827,8 @@
 							     /* - MMC1_WP*/\
 	MUX_VAL(CP(GPMC_nCS4),      (IDIS | PTU | EN  | M0)) /*GPMC_nCS4*/\
 	MUX_VAL(CP(GPMC_nCS5),      (IDIS | PTD | DIS | M0)) /*GPMC_nCS5*/\
-	MUX_VAL(CP(GPMC_nCS6),      (IEN  | PTD | DIS | M1)) /*GPIO_57*/\
-	MUX_VAL(CP(GPMC_nCS7),      (IEN  | PTU | EN  | M1)) /*GPIO_58*/\
+	MUX_VAL(CP(GPMC_nCS6),      (IEN  | PTD | DIS | M0)) /*GPMC_nCS6*/\
+	MUX_VAL(CP(GPMC_nCS7),      (IEN  | PTU | EN  | M0)) /*GPMC_nCS7*/\
 	MUX_VAL(CP(GPMC_nBE1),      (IEN  | PTD | DIS | M0)) /*GPMC_nCS3*/\
 	MUX_VAL(CP(GPMC_CLK),       (IDIS | PTD | DIS | M0)) /*GPMC_CLK*/\
 	MUX_VAL(CP(GPMC_nADV_ALE),  (IDIS | PTD | DIS | M0)) /*GPMC_nADV_ALE*/\
@@ -874,8 +874,7 @@
 	MUX_VAL(CP(CAM_VS),         (IEN  | PTU | EN  | M0)) /*CAM_VS */\
 	MUX_VAL(CP(CAM_XCLKA),      (IDIS | PTD | DIS | M0)) /*CAM_XCLKA*/\
 	MUX_VAL(CP(CAM_PCLK),       (IEN  | PTU | EN  | M0)) /*CAM_PCLK*/\
-	MUX_VAL(CP(CAM_FLD),        (IDIS | PTD | DIS | M4)) /*GPIO_98*/\
-							     /* - CAM_RESET*/\
+	MUX_VAL(CP(CAM_FLD),        (IDIS | PTD | DIS | M4)) /*CAM_FLD*/\
 	MUX_VAL(CP(CAM_D0),         (IEN  | PTD | DIS | M0)) /*CAM_D0*/\
 	MUX_VAL(CP(CAM_D1),         (IEN  | PTD | DIS | M0)) /*CAM_D1*/\
 	MUX_VAL(CP(CAM_D2),         (IEN  | PTD | DIS | M0)) /*CAM_D2*/\
@@ -889,13 +888,13 @@
 	MUX_VAL(CP(CAM_D10),        (IEN  | PTD | DIS | M0)) /*CAM_D10*/\
 	MUX_VAL(CP(CAM_D11),        (IEN  | PTD | DIS | M0)) /*CAM_D11*/\
 	MUX_VAL(CP(CAM_XCLKB),      (IDIS | PTD | DIS | M0)) /*CAM_XCLKB*/\
-	MUX_VAL(CP(CAM_WEN),        (IEN  | PTD | DIS | M4)) /*GPIO_167*/\
+	MUX_VAL(CP(CAM_WEN),        (IEN  | PTD | DIS | M0)) /*CAM_WEN*/\
 	MUX_VAL(CP(CAM_STROBE),     (IDIS | PTD | DIS | M0)) /*CAM_STROBE*/\
 	MUX_VAL(CP(CSI2_DX0),       (IEN  | PTD | DIS | M0)) /*CSI2_DX0*/\
 	MUX_VAL(CP(CSI2_DY0),       (IEN  | PTD | DIS | M0)) /*CSI2_DY0*/\
 	MUX_VAL(CP(CSI2_DX1),       (IEN  | PTD | DIS | M0)) /*CSI2_DX1*/\
 	MUX_VAL(CP(CSI2_DY1),       (IDIS | PTU | EN  | M4)) /*GPIO_115*/\
-							     /* - W2W_PON*/\
+							     /* - W2W_PDN*/\
 	/*Audio Interface */\
 	MUX_VAL(CP(McBSP2_FSX),     (IEN  | PTD | DIS | M0)) /*McBSP2_FSX*/\
 	MUX_VAL(CP(McBSP2_CLKX),    (IEN  | PTD | DIS | M0)) /*McBSP2_CLKX*/\
@@ -937,13 +936,12 @@
 	MUX_VAL(CP(UART1_RTS),      (IDIS | PTD | DIS | M4)) /*GPIO_149*/ \
 	MUX_VAL(CP(UART1_CTS),      (IDIS | PTD | DIS | M4)) /*GPIO_150*/ \
 	MUX_VAL(CP(UART1_RX),       (IEN  | PTD | DIS | M0)) /*UART1_RX*/\
-	MUX_VAL(CP(McBSP4_CLKX),    (IEN  | PTD | DIS | M1)) /*SSI1_DAT_RX*/\
-	MUX_VAL(CP(McBSP4_DR),      (IEN  | PTD | DIS | M1)) /*SSI1_FLAG_RX*/\
-	MUX_VAL(CP(McBSP4_DX),      (IEN  | PTD | DIS | M1)) /*SSI1_RDY_RX*/\
-	MUX_VAL(CP(McBSP4_FSX),     (IEN  | PTD | DIS | M1)) /*SSI1_WAKE*/\
+	MUX_VAL(CP(McBSP4_CLKX),    (IEN  | PTD | DIS | M0)) /*McBSP4_CLKX*/\
+	MUX_VAL(CP(McBSP4_DR),      (IEN  | PTD | DIS | M0)) /*McBSP4_DR*/\
+	MUX_VAL(CP(McBSP4_DX),      (IEN  | PTD | DIS | M0)) /*McBSP4_DX*/\
+	MUX_VAL(CP(McBSP4_FSX),     (IEN  | PTD | DIS | M0)) /*McBSP4_FSX*/\
 	MUX_VAL(CP(McBSP1_CLKR),    (IDIS | PTD | DIS | M4)) /*GPIO_156*/\
 	MUX_VAL(CP(McBSP1_FSR),     (IDIS | PTU | EN  | M4)) /*GPIO_157*/\
-							     /* - BT_WAKEUP*/\
 	MUX_VAL(CP(McBSP1_DX),      (IDIS | PTD | DIS | M4)) /*GPIO_158*/\
 	MUX_VAL(CP(McBSP1_DR),      (IDIS | PTD | DIS | M4)) /*GPIO_159*/\
 	MUX_VAL(CP(McBSP_CLKS),     (IEN  | PTU | DIS | M0)) /*McBSP_CLKS*/\
@@ -952,7 +950,8 @@
 	/*Serial Interface*/\
 	MUX_VAL(CP(UART3_CTS_RCTX), (IEN  | PTD | EN  | M0)) /*UART3_CTS_*/\
 							     /* RCTX*/\
-	MUX_VAL(CP(UART3_RTS_SD),   (IDIS | PTD | DIS | M0)) /*UART3_RTS_SD */\
+	MUX_VAL(CP(UART3_RTS_SD),   (IDIS | PTD | DIS | M4)) /*GPIO_164 */\
+							     /*W2W_BT_NRESET*/\
 	MUX_VAL(CP(UART3_RX_IRRX),  (IEN  | PTU | EN  | M0)) /*UART3_RX_IRRX*/\
 	MUX_VAL(CP(UART3_TX_IRTX),  (IDIS | PTD | DIS | M0)) /*UART3_TX_IRTX*/\
 	MUX_VAL(CP(HSUSB0_CLK),     (IEN  | PTD | DIS | M0)) /*HSUSB0_CLK*/\
