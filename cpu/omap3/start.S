@@ -463,8 +463,11 @@ inval_loop1:
 						@ i-cache
 	mcr	p15, 2, r10, c0, c0, 0		@ select current cache level
 						@ in cssr
-	isb					@ isb to sych the new
-						@ cssr&csidr
+	mov     r2, #0				@ operand for mcr SBZ
+	mcr     p15, 0, r2, c7, c5, 4		@ flush prefetch buffer to
+						@ sych the new cssr&csidr,
+						@ with armv7 this is 'isb',
+						@ but we compile with armv5
 	mrc	p15, 1, r1, c0, c0, 0		@ read the new csidr
 	and	r2, r1, #7			@ extract the length of the
 						@ cache lines
@@ -497,7 +500,9 @@ finished_inval:
 	mov	r10, #0				@ swith back to cache level 0
 	mcr	p15, 2, r10, c0, c0, 0		@ select current cache level
 						@ in cssr
-	isb
+	mcr     p15, 0, r10, c7, c5, 4		@ flush prefetch buffer,
+						@ with armv7 this is 'isb',
+						@ but we compile with armv5
 
 	ldmfd	r13!, {r0-r5, r7, r9-r12,pc}
 
