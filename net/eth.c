@@ -63,15 +63,9 @@ extern int ppc_4xx_eth_initialize(bd_t *);
 extern int rtl8139_initialize(bd_t*);
 extern int rtl8169_initialize(bd_t*);
 extern int scc_initialize(bd_t*);
-extern int skge_initialize(bd_t*);
 extern int tsi108_eth_initialize(bd_t*);
-extern int uli526x_initialize(bd_t *);
 extern int npe_initialize(bd_t *);
 extern int uec_initialize(int);
-extern int bfin_EMAC_initialize(bd_t *);
-extern int greth_initialize(bd_t *);
-extern int mcffec_initialize(bd_t*);
-extern int mcdmafec_initialize(bd_t*);
 extern int at91sam9_eth_initialize(bd_t *);
 
 #ifdef CONFIG_API
@@ -205,9 +199,6 @@ int eth_initialize(bd_t *bis)
 #if defined(CONFIG_MPC8220_FEC)
 	mpc8220_fec_initialize(bis);
 #endif
-#if defined(CONFIG_SK98)
-	skge_initialize(bis);
-#endif
 #if defined(CONFIG_UEC_ETH1)
 	uec_initialize(0);
 #endif
@@ -257,26 +248,11 @@ int eth_initialize(bd_t *bis)
 #if defined(CONFIG_TSI108_ETH)
 	tsi108_eth_initialize(bis);
 #endif
-#if defined(CONFIG_ULI526X)
-	uli526x_initialize(bis);
-#endif
 #if defined(CONFIG_RTL8139)
 	rtl8139_initialize(bis);
 #endif
 #if defined(CONFIG_RTL8169)
 	rtl8169_initialize(bis);
-#endif
-#if defined(CONFIG_BF537)
-	bfin_EMAC_initialize(bis);
-#endif
-#if defined(CONFIG_GRETH)
-	greth_initialize(bis);
-#endif
-#if defined(CONFIG_MCFFEC)
-	mcffec_initialize(bis);
-#endif
-#if defined(CONFIG_FSLDMAFEC)
-	mcdmafec_initialize(bis);
 #endif
 #if defined(CONFIG_AT91CAP9) || defined(CONFIG_AT91SAM9260) || \
     defined(CONFIG_AT91SAM9263)
@@ -600,7 +576,7 @@ extern int at91rm9200_miiphy_initialize(bd_t *bis);
 extern int emac4xx_miiphy_initialize(bd_t *bis);
 extern int mcf52x2_miiphy_initialize(bd_t *bis);
 extern int ns7520_miiphy_initialize(bd_t *bis);
-extern int dm644x_eth_miiphy_initialize(bd_t *bis);
+extern int davinci_eth_miiphy_initialize(bd_t *bis);
 extern int eth_init(bd_t *bd);
 
 int eth_initialize(bd_t *bis)
@@ -623,7 +599,7 @@ int eth_initialize(bd_t *bis)
 	ns7520_miiphy_initialize(bis);
 #endif
 #if defined(CONFIG_DRIVER_TI_EMAC)
-	dm644x_eth_miiphy_initialize(bis);
+	davinci_eth_miiphy_initialize(bis);
 #endif
 #if defined(CONFIG_DRIVER_SMC911X)
 	eth_init(bis);

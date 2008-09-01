@@ -125,7 +125,7 @@
 const void *fdt_offset_ptr(const void *fdt, int offset, int checklen);
 static inline void *fdt_offset_ptr_w(void *fdt, int offset, int checklen)
 {
-	return (void *)fdt_offset_ptr(fdt, offset, checklen);
+	return (void *)(uintptr_t)fdt_offset_ptr(fdt, offset, checklen);
 }
 
 uint32_t fdt_next_tag(const void *fdt, int offset, int *nextoffset);
@@ -213,7 +213,7 @@ int fdt_move(const void *fdt, void *buf, int bufsize);
 /**********************************************************************/
 
 /**
- * fdt_string - retreive a string from the strings block of a device tree
+ * fdt_string - retrieve a string from the strings block of a device tree
  * @fdt: pointer to the device tree blob
  * @stroffset: offset of the string within the strings block (native endian)
  *
@@ -227,7 +227,7 @@ int fdt_move(const void *fdt, void *buf, int bufsize);
 const char *fdt_string(const void *fdt, int stroffset);
 
 /**
- * fdt_num_mem_rsv - retreive the number of memory reserve map entries
+ * fdt_num_mem_rsv - retrieve the number of memory reserve map entries
  * @fdt: pointer to the device tree blob
  *
  * Returns the number of entries in the device tree blob's memory
@@ -240,7 +240,7 @@ const char *fdt_string(const void *fdt, int stroffset);
 int fdt_num_mem_rsv(const void *fdt);
 
 /**
- * fdt_get_mem_rsv - retreive one memory reserve map entry
+ * fdt_get_mem_rsv - retrieve one memory reserve map entry
  * @fdt: pointer to the device tree blob
  * @address, @size: pointers to 64-bit variables
  *
@@ -320,7 +320,7 @@ int fdt_subnode_offset(const void *fdt, int parentoffset, const char *name);
 int fdt_path_offset(const void *fdt, const char *path);
 
 /**
- * fdt_get_name - retreive the name of a given node
+ * fdt_get_name - retrieve the name of a given node
  * @fdt: pointer to the device tree blob
  * @nodeoffset: structure block offset of the starting node
  * @lenp: pointer to an integer variable (will be overwritten) or NULL
@@ -343,6 +343,22 @@ int fdt_path_offset(const void *fdt, const char *path);
 const char *fdt_get_name(const void *fdt, int nodeoffset, int *lenp);
 
 /**
+ * fdt_get_property_namelen - find a property based on substring
+ * @fdt: pointer to the device tree blob
+ * @nodeoffset: offset of the node whose property to find
+ * @name: name of the property to find
+ * @namelen: number of characters of name to consider
+ * @lenp: pointer to an integer variable (will be overwritten) or NULL
+ *
+ * Identical to fdt_get_property_namelen(), but only examine the first
+ * namelen characters of name for matching the property name.
+ */
+const struct fdt_property *fdt_get_property_namelen(const void *fdt,
+						    int nodeoffset,
+						    const char *name,
+						    int namelen, int *lenp);
+
+/**
  * fdt_get_property - find a given property in a given node
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node whose property to find
@@ -352,7 +368,7 @@ const char *fdt_get_name(const void *fdt, int nodeoffset, int *lenp);
  * fdt_get_property() retrieves a pointer to the fdt_property
  * structure within the device tree blob corresponding to the property
  * named 'name' of the node at offset nodeoffset.  If lenp is
- * non-NULL, the length of the property value also returned, in the
+ * non-NULL, the length of the property value is also returned, in the
  * integer pointed to by lenp.
  *
  * returns:
@@ -375,9 +391,23 @@ static inline struct fdt_property *fdt_get_property_w(void *fdt, int nodeoffset,
 						      const char *name,
 						      int *lenp)
 {
-	return (struct fdt_property *)fdt_get_property(fdt, nodeoffset,
-						       name, lenp);
+	return (struct fdt_property *)(uintptr_t)
+		fdt_get_property(fdt, nodeoffset, name, lenp);
 }
+
+/**
+ * fdt_getprop_namelen - get property value based on substring
+ * @fdt: pointer to the device tree blob
+ * @nodeoffset: offset of the node whose property to find
+ * @name: name of the property to find
+ * @namelen: number of characters of name to consider
+ * @lenp: pointer to an integer variable (will be overwritten) or NULL
+ *
+ * Identical to fdt_getprop(), but only examine the first namelen
+ * characters of name for matching the property name.
+ */
+const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
+				const char *name, int namelen, int *lenp);
 
 /**
  * fdt_getprop - retrieve the value of a given property
@@ -389,7 +419,7 @@ static inline struct fdt_property *fdt_get_property_w(void *fdt, int nodeoffset,
  * fdt_getprop() retrieves a pointer to the value of the property
  * named 'name' of the node at offset nodeoffset (this will be a
  * pointer to within the device blob itself, not a copy of the value).
- * If lenp is non-NULL, the length of the property value also
+ * If lenp is non-NULL, the length of the property value is also
  * returned, in the integer pointed to by lenp.
  *
  * returns:
@@ -411,11 +441,11 @@ const void *fdt_getprop(const void *fdt, int nodeoffset,
 static inline void *fdt_getprop_w(void *fdt, int nodeoffset,
 				  const char *name, int *lenp)
 {
-	return (void *)fdt_getprop(fdt, nodeoffset, name, lenp);
+	return (void *)(uintptr_t)fdt_getprop(fdt, nodeoffset, name, lenp);
 }
 
 /**
- * fdt_get_phandle - retreive the phandle of a given node
+ * fdt_get_phandle - retrieve the phandle of a given node
  * @fdt: pointer to the device tree blob
  * @nodeoffset: structure block offset of the node
  *
@@ -423,7 +453,7 @@ static inline void *fdt_getprop_w(void *fdt, int nodeoffset,
  * structure block offset nodeoffset.
  *
  * returns:
- *	the phandle of the node at nodeoffset, on succes (!= 0, != -1)
+ *	the phandle of the node at nodeoffset, on success (!= 0, != -1)
  *	0, if the node has no phandle, or another error occurs
  */
 uint32_t fdt_get_phandle(const void *fdt, int nodeoffset);
@@ -522,7 +552,7 @@ int fdt_node_depth(const void *fdt, int nodeoffset);
  * structure from the start to nodeoffset, *twice*.
  *
  * returns:
- *	stucture block offset of the parent of the node at nodeoffset
+ *	structure block offset of the parent of the node at nodeoffset
  *		(>=0), on success
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
  *	-FDT_ERR_BADMAGIC,
@@ -579,7 +609,7 @@ int fdt_node_offset_by_prop_value(const void *fdt, int startoffset,
  * @fdt: pointer to the device tree blob
  * @phandle: phandle value
  *
- * fdt_node_offset_by_prop_value() returns the offset of the node
+ * fdt_node_offset_by_phandle() returns the offset of the node
  * which has the given phandle value.  If there is more than one node
  * in the tree with the given phandle (an invalid tree), results are
  * undefined.
@@ -806,13 +836,13 @@ int fdt_pack(void *fdt);
 /**
  * fdt_add_mem_rsv - add one memory reserve map entry
  * @fdt: pointer to the device tree blob
- * @addres, @size: 64-bit values (native endian)
+ * @address, @size: 64-bit values (native endian)
  *
  * Adds a reserve map entry to the given blob reserving a region at
  * address address of length size.
  *
  * This function will insert data into the reserve map and will
- * therfore change the indexes of some entries in the table.
+ * therefore change the indexes of some entries in the table.
  *
  * returns:
  *	0, on success
@@ -836,7 +866,7 @@ int fdt_add_mem_rsv(void *fdt, uint64_t address, uint64_t size);
  * the blob.
  *
  * This function will delete data from the reservation table and will
- * therfore change the indexes of some entries in the table.
+ * therefore change the indexes of some entries in the table.
  *
  * returns:
  *	0, on success
@@ -886,7 +916,7 @@ int fdt_set_name(void *fdt, int nodeoffset, const char *name);
  * @len: length of the property value
  *
  * fdt_setprop() sets the value of the named property in the given
- * node to the given value and length, creeating the property if it
+ * node to the given value and length, creating the property if it
  * does not already exist.
  *
  * This function may insert or delete data from the blob, and will

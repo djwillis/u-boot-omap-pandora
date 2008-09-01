@@ -56,13 +56,8 @@ static void setup_videolfb_tag (gd_t *gd);
 static struct tag *params;
 #endif /* CONFIG_SETUP_MEMORY_TAGS || CONFIG_CMDLINE_TAG || CONFIG_INITRD_TAG */
 
-extern int do_reset (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
-
-void do_bootm_linux (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[],
-		     bootm_headers_t *images)
+int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 {
-	ulong	initrd_start, initrd_end;
-	ulong	ep = 0;
 	bd_t	*bd = gd->bd;
 	char	*s;
 	int	machid = bd->bi_arch_number;
@@ -73,34 +68,13 @@ void do_bootm_linux (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[],
 	char *commandline = getenv ("bootargs");
 #endif
 
-	/* find kernel entry point */
-	if (images->legacy_hdr_valid) {
-		ep = image_get_ep (&images->legacy_hdr_os_copy);
-#if defined(CONFIG_FIT)
-	} else if (images->fit_uname_os) {
-		ret = fit_image_get_entry (images->fit_hdr_os,
-					images->fit_noffset_os, &ep);
-		if (ret) {
-			puts ("Can't get entry point property!\n");
-			goto error;
-		}
-#endif
-	} else {
-		puts ("Could not find kernel entry point!\n");
-		goto error;
-	}
-	theKernel = (void (*)(int, int, uint))ep;
+	theKernel = (void (*)(int, int, uint))images->ep;
 
 	s = getenv ("machid");
 	if (s) {
 		machid = simple_strtoul (s, NULL, 16);
 		printf ("Using machid 0x%x from environment\n", machid);
 	}
-
-	ret = boot_get_ramdisk (argc, argv, images, IH_ARCH_ARM,
-			&initrd_start, &initrd_end);
-	if (ret)
-		goto error;
 
 	show_boot_progress (15);
 
@@ -128,8 +102,8 @@ void do_bootm_linux (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[],
 	setup_commandline_tag (bd, commandline);
 #endif
 #ifdef CONFIG_INITRD_TAG
-	if (initrd_start && initrd_end)
-		setup_initrd_tag (bd, initrd_start, initrd_end);
+	if (images->rd_start && images->rd_end)
+		setup_initrd_tag (bd, images->rd_start, images->rd_end);
 #endif
 #if defined (CONFIG_VFD) || defined (CONFIG_LCD)
 	setup_videolfb_tag ((gd_t *) gd);
@@ -151,11 +125,8 @@ void do_bootm_linux (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[],
 
 	theKernel (0, machid, bd->bi_boot_params);
 	/* does not return */
-	return;
-
 error:
-	do_reset (cmdtp, flag, argc, argv);
-	return;
+	return 1;
 }
 
 
