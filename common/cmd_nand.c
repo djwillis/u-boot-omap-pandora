@@ -38,8 +38,7 @@ int find_dev_and_part(const char *id, struct mtd_device **dev,
 		      u8 *part_num, struct part_info **part);
 #endif
 
-#if defined(CONFIG_OMAP) && (defined(CONFIG_OMAP3_BEAGLE)\
-		|| defined(CONFIG_OMAP3_EVM))
+#if defined(CONFIG_OMAP) && (defined(CONFIG_OMAP3_BEAGLE))
 extern void omap_nand_switch_ecc(nand_info_t *nand, int hardware);
 #endif
 
@@ -323,8 +322,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 
 	}
 
-#if defined(CONFIG_OMAP) && (defined(CONFIG_OMAP3_BEAGLE) \
-		|| defined(CONFIG_OMAP3_EVM))
+#if defined(CONFIG_OMAP) && (defined(CONFIG_OMAP3_BEAGLE))
 	if (strncmp(cmd, "ecc", 3) == 0) {
 		if (argc < 2)
 			goto usage;
@@ -505,8 +503,7 @@ U_BOOT_CMD(nand, 5, 1, do_nand,
 	   "nand scrub - really clean NAND erasing bad blocks (UNSAFE)\n"
 	   "nand markbad off - mark bad block at offset (UNSAFE)\n"
 	   "nand biterr off - make a bit error at offset (UNSAFE)\n"
-#if defined(CONFIG_OMAP) && (defined(CONFIG_OMAP3_BEAGLE) \
-		|| defined(CONFIG_OMAP3_EVM))
+#if defined(CONFIG_OMAP) && (defined(CONFIG_OMAP3_BEAGLE))
 	   "nand ecc [hw/sw] - switch the ecc calculation algorithm \n"
 #endif
 	   "nand lock [tight] [status]\n"
