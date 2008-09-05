@@ -926,10 +926,11 @@
 	MUX_VAL(CP(McBSP3_DR),      (IDIS | PTD | DIS | M1)) /*UART2_RTS*/\
 	MUX_VAL(CP(McBSP3_CLKX),    (IDIS | PTD | DIS | M1)) /*UART2_TX*/\
 	MUX_VAL(CP(McBSP3_FSX),     (IEN  | PTD | DIS | M1)) /*UART2_RX*/\
-	MUX_VAL(CP(UART2_CTS),      (IDIS | PTD | DIS | M2)) /*GPT9_PWM_EVT*/\
-	MUX_VAL(CP(UART2_RTS),      (IDIS | PTD | DIS | M2)) /*GPT10_PWM_EVT*/\
-	MUX_VAL(CP(UART2_TX),       (IDIS | PTD | DIS | M2)) /*GPT11_PWM_EVT*/\
-	MUX_VAL(CP(UART2_RX),       (IDIS | PTD | DIS | M2)) /*GPT8_PWM_EVT*/\
+	MUX_VAL(CP(UART2_CTS),      (IDIS | PTD | DIS | M4)) /*GPIO_144*/\
+							     / - LCD_EN*/\
+	MUX_VAL(CP(UART2_RTS),      (IDIS | PTD | DIS | M4)) /*GPIO_145*/\
+	MUX_VAL(CP(UART2_TX),       (IDIS | PTD | DIS | M4)) /*GPIO_146*/\
+	MUX_VAL(CP(UART2_RX),       (IDIS | PTD | DIS | M4)) /*GPIO_147*/\
 	MUX_VAL(CP(UART1_TX),       (IDIS | PTD | DIS | M0)) /*UART1_TX*/\
 	MUX_VAL(CP(UART1_RTS),      (IEN  | PTU | DIS | M4)) /*GPIO_149*/ \
 	MUX_VAL(CP(UART1_CTS),      (IEN  | PTU | DIS | M4)) /*GPIO_150*/ \
