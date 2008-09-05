@@ -396,4 +396,4 @@ int board_nand_init(struct nand_chip *nand)
 
 	return 0;
 }
-#endif /* (CONFIG_COMMANDS & CFG_CMD_NAND) */
+#endif /* CONFIG_CMD_NAND */

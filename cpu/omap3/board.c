@@ -38,11 +38,6 @@
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/mem.h>
 
-#if (CONFIG_COMMANDS & CFG_CMD_NAND) && defined(CFG_NAND_LEGACY)
-#include <linux/mtd/nand_legacy.h>
-extern struct nand_chip nand_dev_desc[CFG_MAX_NAND_DEVICE];
-#endif
-
 #define NOT_EARLY 0
 
 /* Permission values for registers -Full fledged permissions to all */
@@ -283,31 +278,6 @@ int dram_init(void)
 
 	return 0;
 }
-
-#if (CONFIG_COMMANDS & CFG_CMD_NAND) && defined(CFG_NAND_LEGACY)
-/******************************************************************************
- * Routine: nand+_init
- * Description: Set up nand for nand and jffs2 commands
- *****************************************************************************/
-void nand_init(void)
-{
-	extern flash_info_t flash_info[];
-
-	nand_probe(CFG_NAND_ADDR);
-	if (nand_dev_desc[0].ChipID != NAND_ChipID_UNKNOWN)
-		print_size(nand_dev_desc[0].totlen, "\n");
-
-#ifdef CFG_JFFS2_MEM_NAND
-	flash_info[CFG_JFFS2_FIRST_BANK].flash_id = nand_dev_desc[0].id;
-	/* only read kernel single meg partition */
-	flash_info[CFG_JFFS2_FIRST_BANK].size = 1024 * 1024 * 2;
-	/* 1024 blocks in 16meg chip (use less for raw/copied partition) */
-	flash_info[CFG_JFFS2_FIRST_BANK].sector_count = 1024;
-	/* ?, ram for now, open question, copy to RAM or adapt for NAND */
-	flash_info[CFG_JFFS2_FIRST_BANK].start[0] = 0x80200000;
-#endif
-}
-#endif
 
 /******************************************************************************
  * Dummy function to handle errors for EABI incompatibility
