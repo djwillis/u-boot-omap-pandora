@@ -927,7 +927,7 @@
 	MUX_VAL(CP(McBSP3_CLKX),    (IDIS | PTD | DIS | M1)) /*UART2_TX*/\
 	MUX_VAL(CP(McBSP3_FSX),     (IEN  | PTD | DIS | M1)) /*UART2_RX*/\
 	MUX_VAL(CP(UART2_CTS),      (IDIS | PTD | DIS | M4)) /*GPIO_144*/\
-							     / - LCD_EN*/\
+							     /* - LCD_EN*/\
 	MUX_VAL(CP(UART2_RTS),      (IDIS | PTD | DIS | M4)) /*GPIO_145*/\
 	MUX_VAL(CP(UART2_TX),       (IDIS | PTD | DIS | M4)) /*GPIO_146*/\
 	MUX_VAL(CP(UART2_RX),       (IDIS | PTD | DIS | M4)) /*GPIO_147*/\
