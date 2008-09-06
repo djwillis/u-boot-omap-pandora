@@ -232,8 +232,8 @@
 #define CFG_ONENAND_BASE	ONENAND_MAP
 
 #define CFG_ENV_IS_IN_NAND	1
-#define ONENAND_ENV_OFFSET	0x260000	/* environment starts here  */
-#define SMNAND_ENV_OFFSET	0x260000	/* environment starts here  */
+#define ONENAND_ENV_OFFSET	0x240000	/* environment starts here  */
+#define SMNAND_ENV_OFFSET	0x240000	/* environment starts here  */
 
 #define CFG_ENV_SECT_SIZE	boot_flash_sec
 #define CFG_ENV_OFFSET		boot_flash_off
