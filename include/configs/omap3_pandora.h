@@ -148,9 +148,11 @@
 #define CONFIG_JFFS2_PART_SIZE 	0xf980000	/* size of jffs2 partition */
 
 /* Environment information */
-#define CONFIG_BOOTDELAY         10
+#define CONFIG_BOOTDELAY         5
 
 #define CONFIG_BOOTCOMMAND "nand read 80200000 280000 400000 ; bootm 80200000"
+/* #define CONFIG_BOOTCOMMAND \
+        "mmcinit;fatload mmc 0 0x80300000 uImage; fatload mmc 0 0x81600000 rd-ext2.bin; bootm 0x80300000\0" */
 
 #define CONFIG_BOOTARGS "setenv bootargs console=ttyS2,115200n8 noinitrd root=/dev/mtdblock4 rw rootfstype=jffs2"
 
