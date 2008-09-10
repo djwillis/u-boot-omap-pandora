@@ -2652,6 +2652,9 @@ omap3_overo_config :	unconfig
 omap3_evm_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm omap3 evm omap3
 
+omap3_pandora_config :	unconfig
+	@$(MKCONFIG) $(@:_config=) arm omap3 pandora omap3
+	
 #########################################################################
 ## XScale Systems
 #########################################################################
