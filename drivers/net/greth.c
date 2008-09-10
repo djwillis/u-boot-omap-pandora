@@ -27,6 +27,7 @@
 #include <common.h>
 #include <command.h>
 #include <net.h>
+#include <netdev.h>
 #include <malloc.h>
 #include <asm/processor.h>
 #include <ambapp.h>
@@ -657,5 +658,5 @@ int greth_initialize(bd_t * bis)
 	/* set and remember MAC address */
 	greth_set_hwaddr(greth, addr);
 
-	return 1;
+	return 0;
 }

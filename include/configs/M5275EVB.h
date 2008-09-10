@@ -45,7 +45,7 @@
 
 #define CONFIG_MCFUART
 #define CFG_UART_PORT		(0)
-#define CONFIG_BAUDRATE		19200
+#define CONFIG_BAUDRATE		115200
 #define CFG_BAUDRATE_TABLE	{ 9600 , 19200 , 38400 , 57600, 115200 }
 
 /* Configuration for environment
@@ -118,6 +118,9 @@
 #define CFG_I2C_SLAVE		0x7F
 #define CFG_I2C_OFFSET		0x00000300
 #define CFG_IMMR		CFG_MBAR
+#define CFG_I2C_PINMUX_REG	(gpio_reg->par_feci2c)
+#define CFG_I2C_PINMUX_CLR	(0xFFF0)
+#define CFG_I2C_PINMUX_SET	(0x000F)
 
 #ifdef CONFIG_MCFFEC
 #define CONFIG_ETHADDR		00:06:3b:01:41:55

@@ -42,6 +42,7 @@
 #define CONFIG_OMAP		1	/* in a TI OMAP core */
 #define CONFIG_OMAP34XX		1	/* which is a 34XX */
 #define CONFIG_OMAP3430		1	/* which is in a 3430 */
+#define CONFIG_OMAP3_EVM	1	/* working with EVM */
 #define CONFIG_DOS_PARTITION	1
 
 #include <asm/arch/cpu.h>	/* get chip and board defs */

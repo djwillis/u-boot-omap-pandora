@@ -32,6 +32,7 @@
 #include <watchdog.h>
 #include <command.h>
 #include <asm/immap.h>
+#include <netdev.h>
 
 #ifdef  CONFIG_M5271
 /*
@@ -321,3 +322,16 @@ int do_reset(cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc, char *argv[])
 	return 0;
 };
 #endif
+
+#if defined(CONFIG_MCFFEC)
+/* Default initializations for MCFFEC controllers.  To override,
+ * create a board-specific function called:
+ * 	int board_eth_init(bd_t *bis)
+ */
+
+int cpu_eth_init(bd_t *bis)
+{
+	return mcffec_initialize(bis);
+}
+#endif
+

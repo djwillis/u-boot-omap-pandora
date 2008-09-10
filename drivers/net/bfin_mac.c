@@ -9,6 +9,7 @@
 #include <common.h>
 #include <config.h>
 #include <net.h>
+#include <netdev.h>
 #include <command.h>
 #include <malloc.h>
 
@@ -88,7 +89,7 @@ int bfin_EMAC_initialize(bd_t *bis)
 
 	eth_register(dev);
 
-	return 1;
+	return 0;
 }
 
 static int bfin_EMAC_send(struct eth_device *dev, volatile void *packet,

@@ -38,8 +38,8 @@
 const omap3_sysinfo sysinfo = {
 	SDP_3430_V1,
 	SDP_3430_V2,
-	"3530",
-	"OMAP3 overo board",
+	"3503",
+	"Gumstix Overo board",
 };
 
 /******************************************************************************

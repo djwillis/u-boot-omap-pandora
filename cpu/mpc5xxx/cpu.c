@@ -29,6 +29,7 @@
 #include <watchdog.h>
 #include <command.h>
 #include <mpc5xxx.h>
+#include <netdev.h>
 #include <asm/io.h>
 #include <asm/processor.h>
 
@@ -140,18 +141,30 @@ void ft_cpu_setup(void *blob, bd_t *bd)
 
 void bootcount_store (ulong a)
 {
-     volatile ulong *save_addr = (volatile ulong *)(MPC5XXX_CDM_BRDCRMB);
+	volatile ulong *save_addr = (volatile ulong *) (MPC5XXX_CDM_BRDCRMB);
 
-     *save_addr = (BOOTCOUNT_MAGIC & 0xffff0000) | a;
+	*save_addr = (BOOTCOUNT_MAGIC & 0xffff0000) | a;
 }
 
 ulong bootcount_load (void)
 {
-     volatile ulong *save_addr = (volatile ulong *)(MPC5XXX_CDM_BRDCRMB);
+	volatile ulong *save_addr = (volatile ulong *) (MPC5XXX_CDM_BRDCRMB);
 
-     if ((*save_addr & 0xffff0000) != (BOOTCOUNT_MAGIC & 0xffff0000))
-             return 0;
-     else
-             return (*save_addr & 0x0000ffff);
+	if ((*save_addr & 0xffff0000) != (BOOTCOUNT_MAGIC & 0xffff0000))
+		return 0;
+	else
+		return (*save_addr & 0x0000ffff);
 }
 #endif /* CONFIG_BOOTCOUNT_LIMIT */
+
+#ifdef CONFIG_MPC5xxx_FEC
+/* Default initializations for FEC controllers.  To override,
+ * create a board-specific function called:
+ * 	int board_eth_init(bd_t *bis)
+ */
+
+int cpu_eth_init(bd_t *bis)
+{
+	return mpc5xxx_fec_initialize(bis);
+}
+#endif

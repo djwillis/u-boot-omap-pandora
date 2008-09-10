@@ -34,8 +34,6 @@ DECLARE_GLOBAL_DATA_PTR;
 /* CPU-specific hook to allow flushing of caches, etc. */
 extern void prepare_to_boot(void);
 
-extern int do_reset (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
-
 static struct tag *setup_start_tag(struct tag *params)
 {
 	params->hdr.tag = ATAG_CORE;
@@ -173,48 +171,24 @@ static void setup_end_tag(struct tag *params)
 	params->hdr.size = 0;
 }
 
-void do_bootm_linux(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[],
-		    bootm_headers_t *images)
+int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 {
-	ulong	initrd_start, initrd_end;
-	ulong	ep = 0;
 	void	(*theKernel)(int magic, void *tagtable);
 	struct	tag *params, *params_start;
 	char	*commandline = getenv("bootargs");
 	int	ret;
 
-	/* find kernel entry point */
-	if (images->legacy_hdr_valid) {
-		ep = image_get_ep (&images->legacy_hdr_os_copy);
-#if defined(CONFIG_FIT)
-	} else if (images->fit_uname_os) {
-		ret = fit_image_get_entry (images->fit_hdr_os,
-				images->fit_noffset_os, &ep);
-		if (ret) {
-			puts ("Can't get entry point property!\n");
-			goto error;
-		}
-#endif
-	} else {
-		puts ("Could not find kernel entry point!\n");
-		goto error;
-	}
-	theKernel = (void *)ep;
-
-	ret = boot_get_ramdisk (argc, argv, images, IH_ARCH_AVR32,
-			&initrd_start, &initrd_end);
-	if (ret)
-		goto error;
+	theKernel = (void *)images->ep;
 
 	show_boot_progress (15);
 
 	params = params_start = (struct tag *)gd->bd->bi_boot_params;
 	params = setup_start_tag(params);
 	params = setup_memory_tags(params);
-	if (initrd_start) {
+	if (images->rd_start) {
 		params = setup_ramdisk_tag(params,
-					   PHYSADDR(initrd_start),
-					   PHYSADDR(initrd_end));
+					   PHYSADDR(images->rd_start),
+					   PHYSADDR(images->rd_end));
 	}
 	params = setup_commandline_tag(params, commandline);
 	params = setup_clock_tags(params);
@@ -228,9 +202,6 @@ void do_bootm_linux(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[],
 
 	theKernel(ATAG_MAGIC, params_start);
 	/* does not return */
-	return;
-
 error:
-	do_reset (cmdtp, flag, argc, argv);
-	return;
+	return 1;
 }

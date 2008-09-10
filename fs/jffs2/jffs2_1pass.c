@@ -117,9 +117,6 @@
 #include <linux/stat.h>
 #include <linux/time.h>
 #include <watchdog.h>
-
-#if defined(CONFIG_CMD_JFFS2)
-
 #include <jffs2/jffs2.h>
 #include <jffs2/jffs2_1pass.h>
 
@@ -304,10 +301,7 @@ static inline void *get_node_mem_nor(u32 off)
  */
 static inline void *get_fl_mem(u32 off, u32 size, void *ext_buf)
 {
-#if (defined(CONFIG_JFFS2_NAND) && defined(CONFIG_CMD_NAND)) || \
-     defined(ONFIG_CMD_FLASH)
 	struct mtdids *id = current_part->dev->id;
-#endif
 
 #if defined(CONFIG_CMD_FLASH)
 	if (id->type == MTD_DEV_TYPE_NOR)
@@ -325,10 +319,7 @@ static inline void *get_fl_mem(u32 off, u32 size, void *ext_buf)
 
 static inline void *get_node_mem(u32 off)
 {
-#if (defined(CONFIG_JFFS2_NAND) && defined(CONFIG_CMD_NAND)) || \
-     defined(ONFIG_CMD_FLASH)
 	struct mtdids *id = current_part->dev->id;
-#endif
 
 #if defined(CONFIG_CMD_FLASH)
 	if (id->type == MTD_DEV_TYPE_NOR)
@@ -1400,5 +1391,3 @@ jffs2_1pass_info(struct part_info * part)
 	}
 	return 1;
 }
-
-#endif

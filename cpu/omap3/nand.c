@@ -313,9 +313,9 @@ void omap_nand_switch_ecc(struct mtd_info *mtd, int hardware)
 		nand->ecc.hwctl = omap_enable_hwecc;
 		nand->ecc.correct = omap_correct_data;
 		nand->ecc.calculate = omap_calculate_ecc;
-
 		omap_hwecc_init(nand);
 	}
+	nand_switch_ecc(mtd);
 
 	if (nand->options & NAND_BUSWIDTH_16) {
 		mtd->oobavail = mtd->oobsize - (nand->ecc.layout->eccbytes + 2);
@@ -396,4 +396,4 @@ int board_nand_init(struct nand_chip *nand)
 
 	return 0;
 }
-#endif /* (CONFIG_COMMANDS & CFG_CMD_NAND) */
+#endif /* CONFIG_CMD_NAND */

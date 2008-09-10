@@ -24,9 +24,7 @@
  */
 
 #include <common.h>
-
-#if defined(CONFIG_CMD_NET) && defined(CONFIG_NET_MULTI) && \
-	defined(CONFIG_SK98)
+#include <netdev.h>
 
 #include "h/skdrv1st.h"
 #include "h/skdrv2nd.h"
@@ -73,7 +71,7 @@ int skge_initialize(bd_t * bis)
 		eth_register(dev[i]);
 	}
 
-	return numdev;
+	return ((numdev > 0) && (numdev <= SKGE_MAX_CARDS) ? 0 : -1);
 }
 
 
@@ -138,6 +136,3 @@ static int skge_recv(struct eth_device *dev)
 
 	return 0;
 }
-
-
-#endif	/* CONFIG_SK98 */

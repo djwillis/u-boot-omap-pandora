@@ -50,6 +50,16 @@ static int fdt_print(const char *pathp, char *prop, int depth);
  */
 struct fdt_header *working_fdt;
 
+void set_working_fdt_addr(void *addr)
+{
+	char buf[17];
+
+	working_fdt = addr;
+
+	sprintf(buf, "%lx", (unsigned long)addr);
+	setenv("fdtaddr", buf);
+}
+
 /*
  * Flattened Device Tree command, see the help for parameter definitions.
  */
@@ -64,6 +74,7 @@ int do_fdt (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 	 * Set the address of the fdt
 	 ********************************************************************/
 	if (argv[1][0] == 'a') {
+		unsigned long addr;
 		/*
 		 * Set the address [and length] of the fdt.
 		 */
@@ -75,7 +86,8 @@ int do_fdt (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 			return 0;
 		}
 
-		working_fdt = (struct fdt_header *)simple_strtoul(argv[2], NULL, 16);
+		addr = simple_strtoul(argv[2], NULL, 16);
+		set_working_fdt_addr((void *)addr);
 
 		if (!fdt_valid()) {
 			return 1;
@@ -439,7 +451,12 @@ int do_fdt (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 		}
 
 		fdt_chosen(working_fdt, initrd_start, initrd_end, 1);
-	} else {
+	}
+	/* resize the fdt */
+	else if (strncmp(argv[1], "re", 2) == 0) {
+		fdt_resize(working_fdt);
+	}
+	else {
 		/* Unrecognized command */
 		printf ("Usage:\n%s\n", cmdtp->usage);
 		return 1;
@@ -807,6 +824,7 @@ U_BOOT_CMD(
 	"fdt boardsetup                      - Do board-specific set up\n"
 #endif
 	"fdt move   <fdt> <newaddr> <length> - Copy the fdt to <addr> and make it active\n"
+	"fdt resize                          - Resize fdt to size + padding to 4k addr\n"
 	"fdt print  <path> [<prop>]          - Recursive print starting at <path>\n"
 	"fdt list   <path> [<prop>]          - Print one level starting at <path>\n"
 	"fdt set    <path> <prop> [<val>]    - Set <property> [to <val>]\n"
@@ -820,6 +838,6 @@ U_BOOT_CMD(
 	"fdt rsvmem delete <index>           - Delete a mem reserves\n"
 	"fdt chosen [<start> <end>]          - Add/update the /chosen branch in the tree\n"
 	"                                        <start>/<end> - initrd start/end addr\n"
-	"NOTE: If the path or property you are setting/printing has a '#' character\n"
-	"     or spaces, you MUST escape it with a \\ character or quote it with \".\n"
+	"NOTE: Dereference aliases by omiting the leading '/', "
+		"e.g. fdt print ethernet0.\n"
 );

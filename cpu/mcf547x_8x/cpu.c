@@ -28,6 +28,7 @@
 #include <common.h>
 #include <watchdog.h>
 #include <command.h>
+#include <netdev.h>
 
 #include <asm/immap.h>
 
@@ -141,3 +142,21 @@ int watchdog_init(void)
 	return (0);
 }
 #endif				/* CONFIG_HW_WATCHDOG */
+
+#if defined(CONFIG_FSLDMAFEC) || defined(CONFIG_MCFFEC)
+/* Default initializations for MCFFEC controllers.  To override,
+ * create a board-specific function called:
+ * 	int board_eth_init(bd_t *bis)
+ */
+
+int cpu_eth_init(bd_t *bis)
+{
+#if defined(CONFIG_FSLDMAFEC)
+	mcdmafec_initialize(bis);
+#endif
+#if defined(CONFIG_MCFFEC)
+	mcffec_initialize(bis);
+#endif
+	return 0;
+}
+#endif

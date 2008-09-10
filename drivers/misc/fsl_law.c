@@ -38,7 +38,7 @@ DECLARE_GLOBAL_DATA_PTR;
       defined(CONFIG_MPC8568) || \
       defined(CONFIG_MPC8641) || defined(CONFIG_MPC8610)
 #define FSL_HW_NUM_LAWS 10
-#elif defined(CONFIG_MPC8572)
+#elif defined(CONFIG_MPC8536) || defined(CONFIG_MPC8572)
 #define FSL_HW_NUM_LAWS 12
 #else
 #error FSL_HW_NUM_LAWS not defined for this platform
@@ -119,6 +119,45 @@ void print_laws(void)
 	}
 
 	return;
+}
+
+/* use up to 2 LAWs for DDR, used the last available LAWs */
+int set_ddr_laws(u64 start, u64 sz, enum law_trgt_if id)
+{
+	u64 start_align, law_sz;
+	int law_sz_enc;
+
+	if (start == 0)
+		start_align = 1ull << (LAW_SIZE_32G + 1);
+	else
+		start_align = 1ull << (ffs64(start) - 1);
+	law_sz = min(start_align, sz);
+	law_sz_enc = __ilog2_u64(law_sz) - 1;
+
+	if (set_last_law(start, law_sz_enc, id) < 0)
+		return -1;
+
+	/* do we still have anything to map */
+	sz = sz - law_sz;
+	if (sz) {
+		start += law_sz;
+
+		start_align = 1ull << (ffs64(start) - 1);
+		law_sz = min(start_align, sz);
+		law_sz_enc = __ilog2_u64(law_sz) - 1;
+
+		if (set_last_law(start, law_sz_enc, id) < 0)
+			return -1;
+	} else {
+		return 0;
+	}
+
+	/* do we still have anything to map */
+	sz = sz - law_sz;
+	if (sz)
+		return 1;
+
+	return 0;
 }
 
 void init_laws(void)

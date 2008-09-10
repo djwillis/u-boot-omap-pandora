@@ -114,7 +114,6 @@ LIST_8xx="		\
 	MHPC		\
 	MPC86xADS	\
 	MPC885ADS	\
-	MVS1		\
 	NETPHONE	\
 	NETTA		\
 	NETTA2		\
@@ -321,7 +320,7 @@ LIST_8260="		\
 
 LIST_83xx="		\
 	MPC8313ERDB_33	\
-	MPC8313ERDB_66	\
+	MPC8313ERDB_NAND_66	\
 	MPC8315ERDB	\
 	MPC8323ERDB	\
 	MPC832XEMDS	\
@@ -347,6 +346,7 @@ LIST_83xx="		\
 
 LIST_85xx="		\
 	ATUM8548	\
+	MPC8536DS	\
 	MPC8540ADS	\
 	MPC8540EVAL	\
 	MPC8541CDS	\
@@ -355,6 +355,7 @@ LIST_85xx="		\
 	MPC8555CDS	\
 	MPC8560ADS	\
 	MPC8568MDS	\
+	MPC8572DS	\
 	PM854		\
 	PM856		\
 	sbc8540		\
@@ -518,6 +519,7 @@ LIST_ARM11="		\
 	imx31_litekit	\
 	imx31_phycore	\
 	mx31ads		\
+	smdk6400	\
 "
 
 #########################################################################
@@ -739,6 +741,9 @@ LIST_blackfin="		\
 ## SH Systems
 #########################################################################
 
+LIST_sh2="		\
+	rsk7203		\
+"
 LIST_sh3="		\
 	mpr2		\
 	ms7720se	\
@@ -751,9 +756,12 @@ LIST_sh4="		\
 	r7780mp		\
 	r2dplus		\
 	sh7763rdp	\
+	sh7785lcr	\
+	ap325rxa	\
 "
 
 LIST_sh="		\
+	${LIST_sh2}	\
 	${LIST_sh3}	\
 	${LIST_sh4}	\
 "
@@ -798,7 +806,7 @@ do
 	|mips|mips_el \
 	|nios|nios2 \
 	|ppc|5xx|5xxx|512x|8xx|8220|824x|8260|83xx|85xx|86xx|4xx|7xx|74xx|TSEC \
-	|sh|sh3|sh4 \
+	|sh|sh2|sh3|sh4 \
 	|sparc \
 	|x86|I486 \
 	)

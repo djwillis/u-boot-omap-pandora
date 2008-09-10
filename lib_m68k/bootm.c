@@ -42,24 +42,20 @@ DECLARE_GLOBAL_DATA_PTR;
 
 static ulong get_sp (void);
 static void set_clocks_in_mhz (bd_t *kbd);
-extern int do_reset (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
 
-void do_bootm_linux(cmd_tbl_t * cmdtp, int flag,
-		    int argc, char *argv[],
-		    bootm_headers_t *images)
+int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 {
 	ulong sp;
 
-	ulong rd_data_start, rd_data_end, rd_len;
+	ulong rd_len;
 	ulong initrd_start, initrd_end;
 	int ret;
 
 	ulong cmd_start, cmd_end;
 	ulong bootmap_base;
 	bd_t  *kbd;
-	ulong ep = 0;
 	void  (*kernel) (bd_t *, ulong, ulong, ulong, ulong);
-	struct lmb *lmb = images->lmb;
+	struct lmb *lmb = &images->lmb;
 
 	bootmap_base = getenv_bootm_low();
 
@@ -94,32 +90,10 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag,
 	}
 	set_clocks_in_mhz(kbd);
 
-	/* find kernel entry point */
-	if (images->legacy_hdr_valid) {
-		ep = image_get_ep (&images->legacy_hdr_os_copy);
-#if defined(CONFIG_FIT)
-	} else if (images->fit_uname_os) {
-		ret = fit_image_get_entry (images->fit_hdr_os,
-				images->fit_noffset_os, &ep);
-		if (ret) {
-			puts ("Can't get entry point property!\n");
-			goto error;
-		}
-#endif
-	} else {
-		puts ("Could not find kernel entry point!\n");
-		goto error;
-	}
-	kernel = (void (*)(bd_t *, ulong, ulong, ulong, ulong))ep;
+	kernel = (void (*)(bd_t *, ulong, ulong, ulong, ulong))images->ep;
 
-	/* find ramdisk */
-	ret = boot_get_ramdisk (argc, argv, images, IH_ARCH_M68K,
-			&rd_data_start, &rd_data_end);
-	if (ret)
-		goto error;
-
-	rd_len = rd_data_end - rd_data_start;
-	ret = boot_ramdisk_high (lmb, rd_data_start, rd_len,
+	rd_len = images->rd_end - images->rd_start;
+	ret = boot_ramdisk_high (lmb, images->rd_start, rd_len,
 			&initrd_start, &initrd_end);
 	if (ret)
 		goto error;
@@ -139,11 +113,8 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag,
 	 */
 	(*kernel) (kbd, initrd_start, initrd_end, cmd_start, cmd_end);
 	/* does not return */
-	return ;
-
 error:
-	do_reset (cmdtp, flag, argc, argv);
-	return ;
+	return 1;
 }
 
 static ulong get_sp (void)

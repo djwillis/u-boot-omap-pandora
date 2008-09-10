@@ -43,41 +43,15 @@ static int	linux_env_idx;
 static void linux_params_init (ulong start, char * commandline);
 static void linux_env_set (char * env_name, char * env_val);
 
-extern int do_reset (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
-
-void do_bootm_linux (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
-		     bootm_headers_t *images)
+int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 {
-	ulong	initrd_start, initrd_end;
-	ulong	ep = 0;
 	void	(*theKernel) (int, char **, char **, int *);
 	char	*commandline = getenv ("bootargs");
 	char	env_buf[12];
-	int	ret;
 	char	*cp;
 
 	/* find kernel entry point */
-	if (images->legacy_hdr_valid) {
-		ep = image_get_ep (&images->legacy_hdr_os_copy);
-#if defined(CONFIG_FIT)
-	} else if (images->fit_uname_os) {
-		ret = fit_image_get_entry (images->fit_hdr_os,
-				images->fit_noffset_os, &ep);
-		if (ret) {
-			puts ("Can't get entry point property!\n");
-			goto error;
-		}
-#endif
-	} else {
-		puts ("Could not find kernel entry point!\n");
-		goto error;
-	}
-	theKernel = (void (*)(int, char **, char **, int *))ep;
-
-	ret = boot_get_ramdisk (argc, argv, images, IH_ARCH_MIPS,
-			&initrd_start, &initrd_end);
-	if (ret)
-		goto error;
+	theKernel = (void (*)(int, char **, char **, int *))images->ep;
 
 	show_boot_progress (15);
 
@@ -98,10 +72,10 @@ void do_bootm_linux (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 
 	linux_env_set ("memsize", env_buf);
 
-	sprintf (env_buf, "0x%08X", (uint) UNCACHED_SDRAM (initrd_start));
-	linux_env_set ("initrd_start", env_buf);
+	sprintf (env_buf, "0x%08X", (uint) UNCACHED_SDRAM (images->rd_start));
+	linux_env_set ("images->rd_start", env_buf);
 
-	sprintf (env_buf, "0x%X", (uint) (initrd_end - initrd_start));
+	sprintf (env_buf, "0x%X", (uint) (images->rd_end - images->rd_start));
 	linux_env_set ("initrd_size", env_buf);
 
 	sprintf (env_buf, "0x%08X", (uint) (gd->bd->bi_flashstart));
@@ -125,11 +99,7 @@ void do_bootm_linux (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 
 	theKernel (linux_argc, linux_argv, linux_env, 0);
 	/* does not return */
-	return;
-
-error:
-	do_reset (cmdtp, flag, argc, argv);
-	return;
+	return 1;
 }
 
 static void linux_params_init (ulong start, char *line)

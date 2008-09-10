@@ -33,7 +33,6 @@
 extern image_header_t header;
 extern void srmmu_init_cpu(unsigned int entry);
 extern void prepare_bootargs(char *bootargs);
-extern int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[]);
 
 #ifdef CONFIG_USB_UHCI
 extern int usb_lowlevel_stop(void);
@@ -83,48 +82,22 @@ struct __attribute__ ((packed)) {
 image_header_t ihdr;
 
 /* boot the linux kernel */
-void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
-		    bootm_headers_t * images)
+int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t * images)
 {
 	char *bootargs;
-	ulong ep, load;
 	ulong initrd_start, initrd_end;
-	ulong rd_data_start, rd_data_end, rd_len;
+	ulong rd_len;
 	unsigned int data, len, checksum;
 	unsigned int initrd_addr, kernend;
 	void (*kernel) (struct linux_romvec *, void *);
-	struct lmb *lmb = images->lmb;
+	struct lmb *lmb = &images->lmb;
 	int ret;
 
-	if (images->legacy_hdr_valid) {
-		ep = image_get_ep(images->legacy_hdr_os);
-		load = image_get_load(images->legacy_hdr_os);
-#if defined(CONFIG_FIT)
-	} else if (images->fit_uname_os) {
-		int ret = fit_image_get_entry(images->fit_hdr_os,
-					      images->fit_noffset_os, &ep);
-		if (ret) {
-			puts("Can't get entry point property!\n");
-			goto error;
-		}
-
-		ret = fit_image_get_load(images->fit_hdr_os,
-					 images->fit_noffset_os, &load);
-		if (ret) {
-			puts("Can't get load address property!\n");
-			goto error;
-		}
-#endif
-	} else {
-		puts("Could not find kernel entry point!\n");
-		goto error;
-	}
-
 	/* Get virtual address of kernel start */
-	linux_hdr = (void *)load;
+	linux_hdr = (void *)images->os.load;
 
 	/* */
-	kernel = (void (*)(struct linux_romvec *, void *))ep;
+	kernel = (void (*)(struct linux_romvec *, void *))images->ep;
 
 	/* check for a SPARC kernel */
 	if ((linux_hdr->hdr[0] != 'H') ||
@@ -147,19 +120,8 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 	 * extracted and is writeable.
 	 */
 
-	/*
-	 * Are we going to use an initrd image?
-	 */
-	ret = boot_get_ramdisk(argc, argv, images, IH_ARCH_SPARC,
-			       &rd_data_start, &rd_data_end);
-	if (ret) {
-		/* RAM disk found but was corrupt */
-		puts("RAM Disk corrupt\n");
-		goto error;
-	}
-
 	/* Calc length of RAM disk, if zero no ramdisk available */
-	rd_len = rd_data_end - rd_data_start;
+	rd_len = images->rd_end - images->rd_start;
 
 	if (rd_len) {
 
@@ -169,7 +131,7 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 		 */
 		lmb_reserve(lmb, CFG_RELOC_MONITOR_BASE, CFG_RAM_END);
 
-		ret = boot_ramdisk_high(lmb, rd_data_start, rd_len,
+		ret = boot_ramdisk_high(lmb, images->rd_start, rd_len,
 					&initrd_start, &initrd_end);
 		if (ret) {
 			puts("### Failed to relocate RAM disk\n");
@@ -217,6 +179,5 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 	while (1) ;
 
       error:
-	do_reset(cmdtp, flag, argc, argv);
-	return;
+	return 1;
 }

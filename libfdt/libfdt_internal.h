@@ -52,13 +52,10 @@
  */
 #include <fdt.h>
 
-#define ALIGN(x, a)	(((x) + (a) - 1) & ~((a) - 1))
-#define PALIGN(p, a)	((void *)ALIGN((unsigned long)(p), (a)))
+#define FDT_ALIGN(x, a)		(((x) + (a) - 1) & ~((a) - 1))
+#define FDT_TAGALIGN(x)		(FDT_ALIGN((x), FDT_TAGSIZE))
 
-#define memeq(p, q, n)	(memcmp((p), (q), (n)) == 0)
-#define streq(p, q)	(strcmp((p), (q)) == 0)
-
-#define CHECK_HEADER(fdt) \
+#define FDT_CHECK_HEADER(fdt) \
 	{ \
 		int err; \
 		if ((err = fdt_check_header(fdt)) != 0) \
@@ -72,26 +69,27 @@ int _fdt_node_end_offset(void *fdt, int nodeoffset);
 
 static inline const void *_fdt_offset_ptr(const void *fdt, int offset)
 {
-	return fdt + fdt_off_dt_struct(fdt) + offset;
+	return (const char *)fdt + fdt_off_dt_struct(fdt) + offset;
 }
 
 static inline void *_fdt_offset_ptr_w(void *fdt, int offset)
 {
-	return (void *)_fdt_offset_ptr(fdt, offset);
+	return (void *)(uintptr_t)_fdt_offset_ptr(fdt, offset);
 }
 
 static inline const struct fdt_reserve_entry *_fdt_mem_rsv(const void *fdt, int n)
 {
 	const struct fdt_reserve_entry *rsv_table =
-		fdt + fdt_off_mem_rsvmap(fdt);
+		(const struct fdt_reserve_entry *)
+		((const char *)fdt + fdt_off_mem_rsvmap(fdt));
 
 	return rsv_table + n;
 }
 static inline struct fdt_reserve_entry *_fdt_mem_rsv_w(void *fdt, int n)
 {
-	return (void *)_fdt_mem_rsv(fdt, n);
+	return (void *)(uintptr_t)_fdt_mem_rsv(fdt, n);
 }
 
-#define SW_MAGIC		(~FDT_MAGIC)
+#define FDT_SW_MAGIC		(~FDT_MAGIC)
 
 #endif /* _LIBFDT_INTERNAL_H */

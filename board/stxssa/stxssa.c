@@ -32,11 +32,14 @@
 #include <common.h>
 #include <pci.h>
 #include <asm/processor.h>
+#include <asm/mmu.h>
 #include <asm/immap_85xx.h>
+#include <asm/fsl_ddr_sdram.h>
 #include <ioports.h>
 #include <asm/io.h>
 #include <spd_sdram.h>
 #include <miiphy.h>
+#include <netdev.h>
 
 long int fixed_sdram (void);
 
@@ -308,7 +311,9 @@ initdram (int board_type)
 	}
 #endif
 
-	dram_size = spd_sdram ();
+	dram_size = fsl_ddr_sdram();
+	dram_size = setup_ddr_tlbs(dram_size / 0x100000);
+	dram_size *= 0x100000;
 
 #if defined(CONFIG_DDR_ECC)
 	/* Initialize and enable DDR ECC.
@@ -396,3 +401,10 @@ pci_init_board(void)
 	pci_mpc85xx_init(hose);
 #endif /* CONFIG_PCI */
 }
+
+int board_eth_init(bd_t *bis)
+{
+	cpu_eth_init(bis);	/* Initialize TSECs first */
+	return pci_eth_init(bis);
+}
+

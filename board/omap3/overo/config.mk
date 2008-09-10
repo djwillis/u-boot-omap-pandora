@@ -1,4 +1,4 @@
-# overo uses OMAP3 (ARM-CortexA8) cpu
+# Overo uses OMAP3 (ARM-CortexA8) cpu
 #
 # Physical Address:
 # 8000'0000 (bank0)

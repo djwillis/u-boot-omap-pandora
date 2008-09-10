@@ -32,6 +32,7 @@
 #include <asm/io.h>
 #include <net.h>
 #include <asm/mach-common/bits/bootrom.h>
+#include <netdev.h>
 
 /**
  * is_valid_ether_addr - Determine if the given Ethernet address is valid
@@ -153,6 +154,14 @@ int misc_init_r(void)
 	return 0;
 }
 #endif				/* CONFIG_MISC_INIT_R */
+
+#if defined(CONFIG_BFIN_MAC)
+
+int board_eth_init(bd_t *bis)
+{
+	return bfin_EMAC_initialize(bis);
+}
+#endif
 
 #ifdef CONFIG_POST
 /* Using sw10-PF5 as the hotkey */

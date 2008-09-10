@@ -227,6 +227,7 @@ LIBS += drivers/mtd/nand_legacy/libnand_legacy.a
 LIBS += drivers/mtd/onenand/libonenand.a
 LIBS += drivers/mtd/spi/libspi_flash.a
 LIBS += drivers/net/libnet.a
+LIBS += drivers/net/phy/libphy.a
 LIBS += drivers/net/sk98lin/libsk98lin.a
 LIBS += drivers/pci/libpci.a
 LIBS += drivers/pcmcia/libpcmcia.a
@@ -236,6 +237,10 @@ LIBS += drivers/qe/qe.a
 endif
 ifeq ($(CPU),mpc85xx)
 LIBS += drivers/qe/qe.a
+LIBS += cpu/mpc8xxx/ddr/libddr.a
+endif
+ifeq ($(CPU),mpc86xx)
+LIBS += cpu/mpc8xxx/ddr/libddr.a
 endif
 LIBS += drivers/rtc/librtc.a
 LIBS += drivers/serial/libserial.a
@@ -622,6 +627,9 @@ mecp5200_config:  unconfig
 motionpro_config:	unconfig
 	@$(MKCONFIG) motionpro ppc mpc5xxx motionpro
 
+mucmc52_config:		unconfig
+	@$(MKCONFIG) mucmc52 ppc mpc5xxx mucmc52
+
 munices_config:	unconfig
 	@$(MKCONFIG) munices ppc mpc5xxx munices
 
@@ -913,9 +921,6 @@ mgsuvd_config:		unconfig
 
 MHPC_config:		unconfig
 	@$(MKCONFIG) $(@:_config=) ppc mpc8xx mhpc eltec
-
-MVS1_config :		unconfig
-	@$(MKCONFIG) $(@:_config=) ppc mpc8xx mvs1
 
 xtract_NETVIA = $(subst _V2,,$(subst _config,,$1))
 
@@ -1689,6 +1694,15 @@ PQ2FADS-ZU_66MHz_lowboot_config	\
 MPC8266ADS_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) ppc mpc8260 mpc8266ads freescale
 
+muas3001_dev_config \
+muas3001_config	:	unconfig
+	@mkdir -p $(obj)include
+	@mkdir -p $(obj)board/muas3001
+	@if [ "$(findstring dev,$@)" ] ; then \
+		echo "#define CONFIG_MUAS_DEV_BOARD" > $(obj)include/config.h ; \
+	fi
+	@$(MKCONFIG) -a muas3001 ppc mpc8260 muas3001
+
 # PM825/PM826 default configuration:  small (= 8 MB) Flash / boot from 64-bit flash
 PM825_config	\
 PM825_ROMBOOT_config	\
@@ -2065,10 +2079,13 @@ MPC8313ERDB_NAND_66_config: unconfig
 	fi ; \
 	if [ "$(findstring _NAND_,$@)" ] ; then \
 		$(XECHO) -n "...NAND..." ; \
-		echo "TEXT_BASE = 0x00100000" > $(obj)/board/freescale/mpc8313erdb/config.tmp ; \
+		echo "TEXT_BASE = 0x00100000" > $(obj)board/freescale/mpc8313erdb/config.tmp ; \
 		echo "#define CONFIG_NAND_U_BOOT" >>$(obj)include/config.h ; \
 	fi ;
 	@$(MKCONFIG) -a MPC8313ERDB ppc mpc83xx mpc8313erdb freescale
+	@if [ "$(findstring _NAND_,$@)" ] ; then \
+		echo "CONFIG_NAND_U_BOOT = y" >> $(obj)include/config.mk ; \
+	fi ;
 
 MPC8315ERDB_config: unconfig
 	@$(MKCONFIG) -a MPC8315ERDB ppc mpc83xx mpc8315erdb freescale
@@ -2180,7 +2197,7 @@ MPC837XERDB_config:	unconfig
 	@$(MKCONFIG) -a MPC837XERDB ppc mpc83xx mpc837xerdb freescale
 
 MVBLM7_config: unconfig
-	@$(MKCONFIG) $(@:_config=) ppc mpc83xx mvblm7
+	@$(MKCONFIG) $(@:_config=) ppc mpc83xx mvblm7 matrix_vision
 
 sbc8349_config:		unconfig
 	@$(MKCONFIG) $(@:_config=) ppc mpc83xx sbc8349
@@ -2195,6 +2212,9 @@ TQM834x_config:	unconfig
 
 ATUM8548_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) ppc mpc85xx atum8548
+
+MPC8536DS_config:       unconfig
+	@$(MKCONFIG) $(@:_config=) ppc mpc85xx mpc8536ds freescale
 
 MPC8540ADS_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) ppc mpc85xx mpc8540ads freescale
@@ -2254,6 +2274,9 @@ MPC8555CDS_config:	unconfig
 
 MPC8568MDS_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) ppc mpc85xx mpc8568mds freescale
+
+MPC8572DS_config:       unconfig
+	@$(MKCONFIG) $(@:_config=) ppc mpc85xx mpc8572ds freescale
 
 PM854_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) ppc mpc85xx pm854
@@ -2476,7 +2499,7 @@ cp1026_config: unconfig
 	@board/integratorcp/split_by_variant.sh $@
 
 davinci_dvevm_config :	unconfig
-	@$(MKCONFIG) $(@:_config=) arm arm926ejs dv-evm davinci davinci
+	@$(MKCONFIG) $(@:_config=) arm arm926ejs dvevm davinci davinci
 
 davinci_schmoogie_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm926ejs schmoogie davinci davinci
@@ -2754,6 +2777,23 @@ mx31ads_config		: unconfig
 omap2420h4_config	: unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm1136 omap2420h4 NULL omap24xx
 
+#########################################################################
+## ARM1176 Systems
+#########################################################################
+smdk6400_noUSB_config	\
+smdk6400_config	:	unconfig
+	@mkdir -p $(obj)include $(obj)board/samsung/smdk6400
+	@mkdir -p $(obj)nand_spl/board/samsung/smdk6400
+	@echo "#define CONFIG_NAND_U_BOOT" > $(obj)include/config.h
+	@if [ -z "$(findstring smdk6400_noUSB_config,$@)" ]; then			\
+		echo "RAM_TEXT = 0x57e00000" >> $(obj)board/samsung/smdk6400/config.tmp;\
+		$(MKCONFIG) $(@:_config=) arm arm1176 smdk6400 samsung s3c64xx;		\
+	else										\
+		echo "RAM_TEXT = 0xc7e00000" >> $(obj)board/samsung/smdk6400/config.tmp;\
+		$(MKCONFIG) $(@:_noUSB_config=) arm arm1176 smdk6400 samsung s3c64xx;	\
+	fi
+	@echo "CONFIG_NAND_U_BOOT = y" >> $(obj)include/config.mk
+
 #========================================================================
 # i386
 #========================================================================
@@ -3002,6 +3042,14 @@ mimc200_config		:	unconfig
 #========================================================================
 
 #########################################################################
+## sh2 (Renesas SuperH)
+#########################################################################
+rsk7203_config: unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_RSK7203 1" >> include/config.h
+	@./mkconfig -a $(@:_config=) sh sh2 rsk7203
+
+#########################################################################
 ## sh3 (Renesas SuperH)
 #########################################################################
 
@@ -3037,17 +3085,27 @@ ms7722se_config :	unconfig
 r2dplus_config  :   unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_R2DPLUS 1" > $(obj)include/config.h
-	@./mkconfig -a $(@:_config=) sh sh4 r2dplus
+	@$(MKCONFIG) -a $(@:_config=) sh sh4 r2dplus
 
 r7780mp_config: unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_R7780MP 1" > $(obj)include/config.h
-	@./mkconfig -a $(@:_config=) sh sh4 r7780mp
+	@$(MKCONFIG) -a $(@:_config=) sh sh4 r7780mp
 
 sh7763rdp_config  :   unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_SH7763RDP 1" > $(obj)include/config.h
-	@./mkconfig -a $(@:_config=) sh sh4 sh7763rdp
+	@$(MKCONFIG) -a $(@:_config=) sh sh4 sh7763rdp
+
+sh7785lcr_config  :   unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_SH7785LCR 1" >> include/config.h
+	@$(MKCONFIG) -a $(@:_config=) sh sh4 sh7785lcr
+
+ap325rxa_config  :   unconfig
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_AP325RXA 1" > $(obj)include/config.h
+	@$(MKCONFIG) -a $(@:_config=) sh sh4 ap325rxa
 
 #========================================================================
 # SPARC

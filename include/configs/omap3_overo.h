@@ -1,5 +1,5 @@
 /*
- * Configuration settings for the overo board.
+ * Configuration settings for the Gumstix Overo board.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -89,9 +89,7 @@
 
 #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
 #define CONFIG_CMD_MMC		/* MMC support			*/
-#define CONFIG_CMD_ONENAND	/* ONENAND support		*/
-
-#define CONFIG_MTD_ONENAND_VERIFY_WRITE
+#define CONFIG_CMD_NAND		/* NAND support			*/
 
 #define CONFIG_CMD_AUTOSCRIPT	/* autoscript support		*/
 #define CONFIG_CMD_BDI		/* bdinfo			*/
@@ -143,9 +141,9 @@
 /* Environment information */
 #define CONFIG_BOOTDELAY         5
 
-#define CONFIG_BOOTCOMMAND "onenand read 82000000 280000 400000 ; bootm 82000000"
+#define CONFIG_BOOTCOMMAND "mmcinit; fatload mmc 0 82000000 uImage; bootm 82000000"
 
-#define CONFIG_BOOTARGS "setenv bootargs console=ttyS2,115200n8 root=/dev/mtdblock4 rw rootfstype=jffs2"
+#define CONFIG_BOOTARGS "setenv bootargs console=ttyS2,115200n8 root=/dev/mmcblk0p2 rw rootfstype=ext3 rootdelay=1"
 
 #define CONFIG_NETMASK           255.255.254.0
 #define CONFIG_IPADDR            128.247.77.90
@@ -155,7 +153,7 @@
 /*
  * Miscellaneous configurable options
  */
-#define V_PROMPT                 "overo # "
+#define V_PROMPT                 "Overo # "
 
 #define CFG_LONGHELP		/* undef to save memory */
 #define CFG_PROMPT               V_PROMPT
@@ -233,9 +231,9 @@
 #define CFG_MONITOR_BASE	CFG_FLASH_BASE	/* Monitor at start of flash */
 #define CFG_ONENAND_BASE	ONENAND_MAP
 
-#define CFG_ENV_IS_IN_ONENAND	1
-#define ONENAND_ENV_OFFSET	0x260000	/* environment starts here  */
-#define SMNAND_ENV_OFFSET	0x260000	/* environment starts here  */
+#define CFG_ENV_IS_IN_NAND	1
+#define ONENAND_ENV_OFFSET	0x240000	/* environment starts here  */
+#define SMNAND_ENV_OFFSET	0x240000	/* environment starts here  */
 
 #define CFG_ENV_SECT_SIZE	boot_flash_sec
 #define CFG_ENV_OFFSET		boot_flash_off
