@@ -1,14 +1,14 @@
 /*
- * (C) Copyright 2004-2008
- * Texas Instruments, <www.ti.com>
+ * Maintainer : John Willis <source@distant-earth.com>
  *
- * Author :
+ * Derived from Beagle Board, 3430 SDP, and OMAP3EVM code by
+ *      Richard Woodruff <r-woodruff2@ti.com>
+ *      Syed Mohammed Khasim <khasim@ti.com>
  *      Sunil Kumar <sunilsaini05@gmail.com>
  *      Shashi Ranjan <shashiranjanmca05@gmail.com>
  *
- * Derived from Beagle Board and 3430 SDP code by
- *      Richard Woodruff <r-woodruff2@ti.com>
- *      Syed Mohammed Khasim <khasim@ti.com>
+ * (C) Copyright 2004-2008
+ * Texas Instruments, <www.ti.com>
  *
  *
  * See file CREDITS for list of people who contributed to this
@@ -364,3 +364,4 @@ void set_muxconf_regs(void)
 {
 	MUX_DEFAULT_PANDORA();
 }
+
