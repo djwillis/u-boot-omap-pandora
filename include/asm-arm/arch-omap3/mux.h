@@ -1283,7 +1283,7 @@
 	MUX_VAL(CP(UART2_RX),       (IDIS | PTD | DIS | M4)) /*GPIO_147, CS_USB_HOST*/\
 	MUX_VAL(CP(McBSP1_CLKX),    (IDIS | PTD | DIS | M4)) /*GPIO_162, START_ADC*/\
 	MUX_VAL(CP(UART3_CTS_RCTX), (IEN  | PTD | DIS | M4)) /*GPIO_163, nOC_USB5*/\
-	MUX_VAL(CP(UART3_RTS_SD),   (IDIS | PTD | DIS | M4)) /*GPIO_164, EN_USB_5V*/\
+	MUX_VAL(CP(UART3_RTS_SD),   (IDIS | PTD | EN  | M4)) /*GPIO_164, EN_USB_5V*/\
 	MUX_VAL(CP(ETK_D0_ES2 ),    (IDIS | PTD | DIS | M4)) /*GPIO_14, nHEADPHONE_SHUTDOWN*/\
 	MUX_VAL(CP(ETK_D1_ES2 ),    (IDIS | PTD | DIS | M4)) /*GPIO_15, WIFI_POWER_ENABLE*/\
 	MUX_VAL(CP(ETK_D2_ES2 ),    (IEN  | PTD | DIS | M4)) /*GPIO_16, MOTION_NUB2*/\
@@ -1433,5 +1433,5 @@
 	MUX_VAL(CP(d2d_sbusflag),   (IEN  | PTD | DIS | M0)) /*d2d_sbusflag */\
 	MUX_VAL(CP(sdrc_cke0),      (IDIS | PTU | EN  | M0)) /*sdrc_cke0 */\
 	MUX_VAL(CP(sdrc_cke1),      (IDIS | PTD | DIS | M7)) /*sdrc_cke1 not used*/
-	
+
 #endif

@@ -171,16 +171,16 @@ static void dss_lcd_init(void)
 
 // TPO LCD GAMMA VALUES
 #define g0  106
-#define g1  200 
-#define g2  289 
-#define g3  375 
-#define g4  460 
-#define g5  543 
-#define g6  625 
-#define g7  705 
-#define g8  785 
-#define g9  864 
-#define g10 942 
+#define g1  200
+#define g2  289
+#define g3  375
+#define g4  460
+#define g5  543
+#define g6  625
+#define g7  705
+#define g8  785
+#define g9  864
+#define g10 942
 #define g11 1020
 
 static void lcd_init(void)
@@ -327,15 +327,15 @@ int misc_init_r(void)
 	/* GPIO CLEARDATAOUT */
 	*((uint *) 0x48310090) = 0x0080C000;
 	*((uint *) 0x49056090) = 0x20000003;
-        *((uint *) 0x49058090) = 0x00002014;
+	*((uint *) 0x49058090) = 0x00002004;
 
 	/* GPIO SETDATAOUT */
-        *((uint *) 0x49056094) = 0x800A2000;
+	*((uint *) 0x49058094) = 0x00000010;
 
 	/* SPI4 (LCD) */
 	*((uint *) 0x480BA010) = 0x00000002; // Reset module
 	do
-	{ 
+	{
 		i = *((uint *) 0x480BA014);
 		i &= 1;
 	} while (!i);
@@ -351,7 +351,7 @@ int misc_init_r(void)
 
 	lcd_init();
 
-	return 0;
+	return (0);
 }
 
 /******************************************************************************
